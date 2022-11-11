@@ -8,6 +8,10 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "browserify": "^17.0.0",
+    "buffer": "^6.0.3",
+    "mqtt": "^4.3.7",
     "vue": "^2.7.7",
     "vue-router": "^3.5.4"
   },

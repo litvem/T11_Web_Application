@@ -1,35 +1,30 @@
-# frontend
+# DIT356 H22 Team 11
 
-This template should help get you started developing with Vue 3 in Vite.
+## Getting started with frontend
 
-## Recommended IDE Setup
+### Your broker must support websockets sothat the browsercan connect to it
+### If you are using Mosquitto, be aware that it does not support websockets by default 
+- To use websocket with mosquitto mosquitto.conf file
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+```
+listener 1883
+protocol mqtt
+listener 9001
+protocol websockets
+allow_anonymous true
+```
+- To run mosquitto with these configurations use: 
+```
+mosquitto -c mosquitto.conf -v
+```
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
+### After clonning the repo and open the terminal in your local machine:
+- cd to the frontend folder
+- install dependencies with: 
+```
 npm install
 ```
-
-### Compile and Hot-Reload for Development
-
-```sh
+- to run the application:
+```
 npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```

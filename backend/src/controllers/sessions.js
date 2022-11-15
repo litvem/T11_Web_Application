@@ -5,14 +5,10 @@ const session = require("../util/session")
 router.use(session)
 
 router.post("/api/sessions", (req, res, next) => {
-    if (req.session) return res.redirect("/api/sessions/exists")
+    if (req.session.user) return res.status(200).json(req.session)
 
-    req.session.save()
-    res.status(201).json({ message: "Session created." })
-})
-
-router.get("/api/sessions/exists", (req, res, next) => {
-    res.status(304).json({ message: "Session exists" })
+    req.session.user = req.session.id
+    res.status(201).json(req.session)
 })
 
 module.exports = router

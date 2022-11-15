@@ -6,10 +6,9 @@ const path = require('path')
 const cors = require('cors')
 const history = require('connect-history-api-fallback')
 
-// TODO: Import controllers
+const sessions = require("./controllers/sessions")
 
 // Variables
-let mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/animalDevelopmentDB'
 let port = process.env.PORT || 3000
 
 // Create Express app
@@ -30,7 +29,7 @@ app.get('/api', function(req, res) {
     res.json({'message': 'Welcome to your DIT356 backend ExpressJS project!'})
 })
 
-// TODO: app.use(<controller>)
+app.use(sessions)
 
 // Configuration for serving frontend in production mode
 // Support Vuejs HTML 5 history mode

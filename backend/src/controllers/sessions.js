@@ -30,4 +30,18 @@ router.post("/api/sessions", (req, res, next) => {
     res.status(201).json(req.session)
 })
 
+router.patch("/api/sessions", (req, res, next) => {
+    if (!req.session.user) return res.status(401).json({ message: "Unauthorized, no session." })
+    console.log(req.body)
+
+    if (!req.body || !req.body.date) return res.status(400).json({ message: "Bad request, date required." })
+
+    let date = new Date(req.body.date)
+    // Catches invalid dates
+    if (date.toString() === "Invalid Date") return res.status(400).json({ message: "Bad request, invalid date." })
+
+    req.session.interval = getWeek(date)
+    res.status(200).json(req.session)
+})
+
 module.exports = router

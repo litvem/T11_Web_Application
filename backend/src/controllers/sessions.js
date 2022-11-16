@@ -32,7 +32,6 @@ router.post("/api/sessions", (req, res, next) => {
 
 router.patch("/api/sessions", (req, res, next) => {
     if (!req.session.user) return res.status(401).json({ message: "Unauthorized, no session." })
-    console.log(req.body)
 
     if (!req.body || !req.body.date) return res.status(400).json({ message: "Bad request, date required." })
 

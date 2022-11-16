@@ -13,6 +13,9 @@ let port = process.env.PORT || 3000
 
 // Create Express app
 let app = express()
+// Parse requests of content-type 'application/json'
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 // HTTP request logger
 app.use(morgan('dev'))
 // Allow auth cookies to be passed to the server

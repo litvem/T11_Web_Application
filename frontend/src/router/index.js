@@ -13,6 +13,13 @@ const router = new VueRouter({
       name: "home",
       component: HomeView,
     },
+    {
+      path: "/calendar",
+      name: "calendar",
+      component() {
+        return import("../views/CalendarView.vue")
+      },
+    },
   ],
 });
 

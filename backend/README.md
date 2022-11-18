@@ -8,6 +8,10 @@
 ```
 npm install
 ```
+- add a .env file in `/backend/` containing the following key:
+```dotenv
+SESSION_SECRET="<insert your key>"
+```
 - to run the application:
 ```
 npm run dev

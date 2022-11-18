@@ -1,10 +1,42 @@
 <template>
   <div class="home">
-    <h1>{{ test }}</h1>
+    <div class="welcome-message">
+      <h4>
+        Welcome to Dentistimo, digital portal where you can easy book your
+        dental appointment.
+      </h4>
+    </div>
+    <section>
+      <div class="map"></div>
+      <div class="schedule-related">
+        <div class="search">
+          <label for="datepicker">Choose a date</label>
+          <template class="w-50 p-3">
+            <div>
+              <b-form-datepicker
+                id="datepicker"
+                v-model="value"
+                class="mb-2"
+                today-button
+                reset-button
+                close-button
+                locale="en"
+              ></b-form-datepicker>
+            </div>
+          </template>
+          <b-button id="search-button" variant="outline-primary"
+            >Search</b-button
+          >
+        </div>
+        <div class="filtered-schedule"></div>
+      </div>
+    </section>
+
+    <!--<h1>{{ test }}</h1>
     <h1>{{ list }}</h1>
     <input type="text" v-model="message" value="" />
     <button @click="publishMessage(message)">publish</button>
-    <button @click="sub">sub</button>
+    <button @click="sub">sub</button>-->
   </div>
 </template>
 
@@ -12,6 +44,11 @@
 import { ref, onMounted } from "vue";
 import mqtt from "mqtt";
 export default {
+  data() {
+    return {
+      value: "",
+    };
+  },
   setup() {
     let test = ref("test");
     let mqttClient = null;

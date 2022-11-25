@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "axios": "^1.2.0",
     "bootstrap": "^5.2.2",
     "bootstrap-vue": "^2.23.1",
     "browserify": "^17.0.0",

@@ -24,9 +24,8 @@
               ></b-form-datepicker>
             </div>
           </template>
-          <b-button id="search-button" variant="outline-primary"
-            >Search</b-button
-          >
+          <b-button id="search-button" variant="outline-primary" v-on:click="patchTimeInterval()"
+            >Search</b-button>
         </div>
         <div class="filtered-schedule"></div>
       </div>
@@ -41,13 +40,28 @@
 </template>
 
 <script>
+import { Api } from "../Api.js";
 import { ref, onMounted } from "vue";
 import mqtt from "mqtt";
+
+
 export default {
   data() {
     return {
       value: "",
+      sessionId: ""
     };
+  },
+  mounted() {
+    Api.post('/sessions')
+        .then(response => {
+          console.log(response);
+          this.sessionId = response.data.user;
+          console.log(this.sessionId);
+        })
+        .catch(err => {
+          console.log(err);
+        });
   },
   setup() {
     let test = ref("test");
@@ -89,5 +103,18 @@ export default {
 
     return { message, test, list, sub, publishMessage };
   },
+  methods: {
+    patchTimeInterval(){
+      Api.patch('/sessions', {
+        date: this.value
+      })
+          .then(response => {
+            console.log(response)
+          })
+          .catch(err => {
+            console.log(err)
+          });
+    }
+  }
 };
 </script>

@@ -74,10 +74,13 @@ section {
 }
 
 section .map {
-  background-color: #67f69c23;
   width: 40%;
   height: 100%;
   display: flex;
+  align-items: center;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(0, 81, 173, 0.959);
 }
 
 section .schedule-related {
@@ -120,6 +123,14 @@ section .schedule-related .filtered-schedule {
   height: 85%;
   display: flex;
   justify-content: center;
+}
+
+#modal-prevent-closing {
+  background-color: #1078e029;
+}
+
+.modal-header .close {
+  display: none;
 }
 
 #spinner {

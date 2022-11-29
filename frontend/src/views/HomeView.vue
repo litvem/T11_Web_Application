@@ -7,11 +7,13 @@
       </h4>
     </div>
     <section>
-      <div class="map"></div>
+      <div class="map">
+        <Map />
+      </div>
       <div class="schedule-related">
         <!--search related items-->
         <div class="search">
-          <label for="datepicker">Choose a date</label>
+          <label for="datepicker">Select a date</label>
           <template class="w-50 p-3">
             <div>
               <b-form-datepicker
@@ -48,7 +50,7 @@
     <b-modal
       id="modal-prevent-closing"
       ref="modal"
-      title="Your Name"
+      title="Provide following information to complete your booking:"
       @show="resetModal"
       @hidden="resetModal"
       @ok="handleOk"
@@ -100,10 +102,14 @@
 </template>
 
 <script>
+import Map from "../components/Map.vue";
 import { ref, onMounted } from "vue";
 import mqtt from "mqtt";
 
 export default {
+  components: {
+    Map,
+  },
   data() {
     return {
       date: "",

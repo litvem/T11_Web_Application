@@ -2,7 +2,7 @@
     <GmapMap
         :center="coordinates"
         :zoom="10"
-        style="width: 500px; height: 340px; margin: 50px; display: flex">
+        style="width: 100%; height: 100%; display: flex">
       <GmapAutocomplete
           @place_changed='setPlace'
       />

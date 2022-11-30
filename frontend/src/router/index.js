@@ -14,10 +14,10 @@ const router = new VueRouter({
       component: HomeView,
     },
     {
-      path: "/calendar",
-      name: "calendar",
+      path: "/schedule",
+      name: "schedule",
       component() {
-        return import("../views/CalendarView.vue")
+        return import("../views/ScheduleView.vue")
       },
     },
   ],

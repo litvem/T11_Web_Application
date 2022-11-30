@@ -18,7 +18,7 @@
             <div>
               <b-form-datepicker
                 id="datepicker"
-                v-model="date"
+                v-model="value"
                 class="mb-2"
                 today-button
                 reset-button
@@ -27,12 +27,8 @@
               ></b-form-datepicker>
             </div>
           </template>
-          <b-button
-            id="search-button"
-            variant="outline-primary"
-            v-on:click="getDate"
-            >Search</b-button
-          >
+          <b-button id="search-button" variant="outline-primary" v-on:click="patchTimeInterval()"
+            >Search</b-button>
         </div>
         <div class="filtered-schedule">
           <b-button
@@ -118,6 +114,7 @@
 </template>
 
 <script>
+import { Api } from "../Api.js";
 import Map from "../components/Map.vue";
 import { ref, onMounted } from "vue";
 import mqtt from "mqtt";
@@ -128,14 +125,25 @@ export default {
   },
   data() {
     return {
-      date: "",
       value: "",
+      sessionId: "",
       name: "",
       email: "",
       nameState: null,
       emailState: null,
       topic: "",
     };
+  },
+  mounted() {
+    Api.post('/sessions')
+        .then(response => {
+          console.log(response);
+          this.sessionId = response.data.user;
+          console.log(this.sessionId);
+        })
+        .catch(err => {
+          console.log(err);
+        });
   },
   setup() {
     let test = ref("test");
@@ -214,6 +222,18 @@ export default {
         this.$bvModal.hide("modal-prevent-closing");
       });
     },
+    patchTimeInterval(){
+      Api.patch('/sessions', {
+        date: this.value
+      })
+          .then(response => {
+            console.log(response)
+          })
+          .catch(err => {
+            console.log(err)
+          });
+    }
   },
+
 };
 </script>

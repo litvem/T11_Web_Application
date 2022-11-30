@@ -8,7 +8,7 @@
     </div>
     <section>
       <div class="map">
-        <Map />
+        <Map :dentistsArray="dentists"/>
       </div>
       <div class="schedule-related">
         <!--search related items-->
@@ -150,6 +150,7 @@ export default {
     let mqttClient = null;
     let list = ref(["a"]);
     let message = "";
+    let dentists = ref([]);
     onMounted(() => {
       const host = "ws://localhost:9001";
       mqttClient = mqtt.connect(host);
@@ -163,8 +164,27 @@ export default {
       });
 
       mqttClient.subscribe("/test", { qos: 1 });
+      mqttClient.subscribe("data/dentist/response", { qos: 0 });
 
       mqttClient.on("message", function (topic, message) {
+        if (topic == "data/dentist/response") {
+          var arrayOfDentists = JSON.parse(message.toString());
+
+          dentists.value = [];
+          arrayOfDentists.map((dentist) => {
+            dentists.value.push({
+              name: dentist.name,
+              coordinate: {
+                longitude: dentist.coordinate.longitude,
+                latitude: dentist.coordinate.latitude,
+              },
+              address: dentist.address,
+            });
+          });
+        }
+
+        this.dentistsTest = dentists.value;
+        console.log(this.dentistsTest);
         test.value = message.toString();
         list.value.push(message.toString());
         console.log(message.toString());
@@ -173,6 +193,7 @@ export default {
       mqttClient.on("close", () => {
         console.log(`mqtt client disconnected`);
       });
+      mqttClient.publish("data/dentist/request");
     });
     const publishMessage = (payload) => {
       mqttClient.publish("/test", payload);
@@ -183,7 +204,7 @@ export default {
       console.log("/sub");
     };
 
-    return { message, test, list, sub, publishMessage };
+    return { message, test, list,dentists, sub, publishMessage };
   },
   methods: {
     getDate() {

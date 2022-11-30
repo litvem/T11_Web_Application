@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import { dentists } from '../assets/dentists.json'
 export default {
   name: 'Map',
+  props: ["dentistsArray"],
   data() {
     return {
       map: null,
@@ -43,7 +43,7 @@ export default {
   },
   computed: {
     markers() {
-      return dentists.map(({ name, coordinate: { longitude, latitude }, address }) => ({
+      return this.dentistsArray.map(({ name, coordinate: { longitude, latitude }, address }) => ({
         name: {
           name,
           color: '#de1313',

@@ -41,6 +41,12 @@
             v-b-modal.modal-prevent-closing
             >Sample time slot</b-button
           >
+          <b-button
+            id="error-button"
+            variant="outline-secondary"
+            v-b-modal.error_message
+            >Error trigger</b-button
+          >
           <!--spinner while waiting filtered response
           <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
@@ -90,6 +96,16 @@
         </b-button>
         <b-button size="md" variant="outline-secondary" @click="cancel()">
           Cancel
+        </b-button>
+      </template>
+    </b-modal>
+    <!--modal to display error message-->
+    <b-modal id="error_message" ref="modal"
+      ><h5>Error occured during your booking. Please try again.</h5>
+      <template #modal-footer="{ cancel }">
+        <!--Emulate built in modal footer ok and cancel button actions-->
+        <b-button size="md" variant="outline-primary" @click="cancel()">
+          OK
         </b-button>
       </template>
     </b-modal>

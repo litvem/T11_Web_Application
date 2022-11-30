@@ -126,7 +126,11 @@ section .schedule-related .filtered-schedule {
 }
 
 #modal-prevent-closing {
-  background-color: #1078e029;
+  background-color: #032f5c29;
+}
+
+#error_message {
+  background-color: #ff040029;
 }
 
 .modal-header .close {

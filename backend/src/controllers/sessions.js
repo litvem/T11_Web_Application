@@ -11,7 +11,20 @@ const getWeek = date => {
     // Implementation taken from https://stackoverflow.com/questions/23593052/format-javascript-date-as-yyyy-mm-dd
     // Date is date of month and day is day of week. Week starts on Sunday -> +1 to adjust to Monday
     let mon = date.getDate() - date.getDay() + 1
+
+    // Fixes week offset where choosing a Sunday would return the following week
+    if (date.getDay() === 0) {
+        mon -= 7
+    }
+
     let sun = mon + 6
+
+    // Fixes month offset where if the latter part of a week is in a new month
+    // the end date would be set in the current month
+    // Logic from https://www.geeksforgeeks.org/how-to-get-the-number-of-days-in-a-specified-month-using-javascript/#:~:text=JavaScript%20getDate()%20Method%3A%20This,31)%20for%20the%20defined%20date.&text=Return%20value%3A%20It%20returns%20a,the%20day%20of%20the%20month.
+    if (mon < 1) {
+        sun += new Date(date.getFullYear(), date.getMonth(), 0).getDate()
+    }
 
     return {
         // Formatted "yyyy-mm-ddThh:mm:ss.sssZ". Splitting by "T" -> [ "yyyy-mm-dd", "hh:mm:ss.sssZ" ]

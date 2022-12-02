@@ -140,3 +140,6 @@ dist/
 
 cypress/videos/
 cypress/screenshots/
+
+# macOS file to store custom attributes of its containing folder
+**/.DS_Store

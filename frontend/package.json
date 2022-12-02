@@ -9,11 +9,17 @@
   },
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "axios": "^1.2.0",
+    "bootstrap": "^5.2.2",
+    "bootstrap-vue": "^2.23.1",
     "browserify": "^17.0.0",
     "buffer": "^6.0.3",
+    "gmap-vue": "^3.5.4",
     "mqtt": "^4.3.7",
     "vue": "^2.7.7",
-    "vue-router": "^3.5.4"
+    "vue-browser-geolocation": "^1.8.0",
+    "vue-router": "^3.5.4",
+    "vue2-google-maps": "^0.10.7"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",

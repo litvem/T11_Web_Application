@@ -20,6 +20,13 @@ const router = new VueRouter({
         return import("../components/Map.vue")
       }
     }
+    {
+      path: "/schedule",
+      name: "schedule",
+      component() {
+        return import("../views/ScheduleView.vue")
+      },
+    },
   ],
 });
 

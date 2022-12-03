@@ -131,6 +131,9 @@ export default {
       nameState: null,
       emailState: null,
       topic: "",
+      newInterval: "",
+      previousInterval: "",
+      count: 0
     };
   },
   setup() {
@@ -195,16 +198,19 @@ export default {
       });
       mqttClient.publish("data/dentist/request");
     });
-    const publishMessage = (payload) => {
-      mqttClient.publish("/test", payload);
+
+    const publishSchedule = (oldInterval, latestInterval) => {
+      mqttClient.publish("schedule/request", `{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`,1);
+      console.log(`{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`);
     };
 
-    const sub = () => {
-      mqttClient.subscribe("/sub", { qos: 1 });
-      console.log("/sub");
+    const subscribeToSchedule = (interval) => {
+      const fromTo= JSON.parse(interval);
+      mqttClient.subscribe(`schedule/response/${fromTo.from}-${fromTo.to}`, { qos: 1 });
+      console.log(`schedule/response/${fromTo.from}-${fromTo.to}`)
     };
 
-    return { message, test, list,dentists, sub, publishMessage };
+    return { message, dentists, initialInterval, subscribeToSchedule, publishSchedule };
   },
   methods: {
     getDate() {
@@ -244,11 +250,28 @@ export default {
       });
     },
     patchTimeInterval(){
+      this.count++
+      console.log(this.count)
       Api.patch('/sessions', {
         date: this.date
       })
           .then(response => {
-            console.log(response)
+            if(this.count === 1){
+              console.log(response)
+              this.previousInterval = this.initialInterval;
+              console.log(this.previousInterval);
+              this.newInterval = JSON.stringify(response.data.interval);
+              console.log(this.newInterval);
+              this.subscribeToSchedule(this.newInterval);
+              this.publishSchedule(this.previousInterval,this.newInterval);
+            }else{
+              this.previousInterval = this.newInterval;
+              console.log(this.previousInterval);
+              this.newInterval = JSON.stringify(response.data.interval);
+              console.log(this.newInterval);
+              this.subscribeToSchedule(this.newInterval);
+              this.publishSchedule(this.previousInterval,this.newInterval);
+            }
           })
           .catch(err => {
             console.log(err)

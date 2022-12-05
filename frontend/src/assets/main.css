@@ -133,6 +133,10 @@ section .schedule-related .filtered-schedule {
   background-color: #ff040029;
 }
 
+#success_message {
+  background-color: #33ff0029;
+}
+
 .modal-header .close {
   display: none;
 }

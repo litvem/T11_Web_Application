@@ -43,6 +43,12 @@
             v-b-modal.error_message
             >Error trigger</b-button
           >
+          <b-button
+            id="success-button"
+            variant="outline-secondary"
+            v-b-modal.success_message
+            >Success trigger</b-button
+          >
           <!--spinner while waiting filtered response
           <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
@@ -87,10 +93,10 @@
       </form>
       <template #modal-footer="{ cancel }">
         <!--Emulate built in modal footer ok and cancel button actions-->
-        <b-button size="md" variant="outline-primary" @click="handleOk">
+        <b-button size="md" variant="outline-success" @click="handleOk">
           Submit
         </b-button>
-        <b-button size="md" variant="outline-secondary" @click="cancel()">
+        <b-button size="md" variant="outline-danger" @click="cancel()">
           Cancel
         </b-button>
       </template>
@@ -98,6 +104,19 @@
     <!--modal to display error message-->
     <b-modal id="error_message" ref="modal"
       ><h5>Error occured during your booking. Please try again.</h5>
+      <template #modal-footer="{ cancel }">
+        <!--Emulate built in modal footer ok and cancel button actions-->
+        <b-button size="md" variant="outline-primary" @click="cancel()">
+          OK
+        </b-button>
+      </template>
+    </b-modal>
+    <!--modal to display success message-->
+    <b-modal id="success_message" ref="modal"
+      ><h5>
+        Your booking was successful. <br />
+        Confirmation has been sent to you via email.
+      </h5>
       <template #modal-footer="{ cancel }">
         <!--Emulate built in modal footer ok and cancel button actions-->
         <b-button size="md" variant="outline-primary" @click="cancel()">

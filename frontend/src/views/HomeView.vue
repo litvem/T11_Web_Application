@@ -173,7 +173,7 @@ export default {
 
       mqttClient.on("message", function (topic, message) {
         switch (topic) {
-          case (topic="data/dentist/response"):
+          case ("data/dentist/response"):
             var arrayOfDentists = JSON.parse(message.toString());
             dentists.value = [];
             arrayOfDentists.map((dentist) => {
@@ -187,7 +187,7 @@ export default {
               });
             });
             break;
-          case (topic="schedule/initial/response"):
+          case ("schedule/initial/response"):
             console.log(message.toString())
             mqttClient.unsubscribe("schedule/initial/response");
         }

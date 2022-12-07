@@ -209,7 +209,11 @@ export default {
     const subscribeToSchedule = (interval) => {
       const fromTo= JSON.parse(interval);
       mqttClient.subscribe(`schedule/response/${fromTo.from}-${fromTo.to}`, { qos: 1 });
-      console.log(`schedule/response/${fromTo.from}-${fromTo.to}`)
+      mqttClient.on("message", function (topic, message){
+        if (topic === `schedule/response/${fromTo.from}-${fromTo.to}`) {
+          schedule.value= JSON.parse(message.toString());
+        }
+      });
     };
 
     return { message, dentists, schedule, initialInterval, subscribeToSchedule, publishSchedule };

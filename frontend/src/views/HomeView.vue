@@ -190,7 +190,7 @@ export default {
             });
             break;
           case ("schedule/initial/response"):
-            console.log(message.toString())
+            schedule.value= JSON.parse(message.toString());
             mqttClient.unsubscribe("schedule/initial/response");
         }
       });

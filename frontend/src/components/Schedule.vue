@@ -1,7 +1,9 @@
 <template>
   <div class="wrapper">
     <div class="titles">
-      <p class="day">Day</p>
+      <div>
+        <p class="day">Day</p>
+      </div>
       <p class="weekday" v-for="day in week.length - 2">
         {{ week[day - 1].day }} {{ week[day - 1].date }}
       </p>
@@ -119,13 +121,14 @@ export default {
 
 <style scoped>
 .wrapper {
-  --day-width: 150px;
-  --time-width: 80px;
+  --day-width: 100%;
+  --time-width: 110px;
   --slot-height: 60px;
   width: calc(var(--time-width) + var(--day-width) * 5 + 40px);
   padding: 10px;
   background-color: rgba(173, 216, 230, 0.71);
   border-radius: 15px;
+  overflow-y: scroll;
 }
 
 .titles {
@@ -154,7 +157,6 @@ p {
   margin: 0;
   padding: 0;
 
-  height: 450px;
   overflow-y: scroll;
   scroll-behavior: smooth;
 }

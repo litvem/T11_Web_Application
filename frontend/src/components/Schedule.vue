@@ -1,12 +1,12 @@
 <template>
   <div class="wrapper">
     <div class="titles">
-      <div>
-        <p class="day">Day</p>
+      <div class="day">
+        <p>Day</p>
       </div>
-      <p class="weekday" v-for="day in week.length - 2">
-        {{ week[day - 1].day }} {{ week[day - 1].date }}
-      </p>
+      <div class="weekday" v-for="day in week.length - 2">
+        <p>{{ week[day - 1].day }} {{ week[day - 1].date }}</p>
+      </div>
     </div>
     <div class="timeline">
       <div class="timeline-timestamps">
@@ -121,14 +121,20 @@ export default {
 
 <style scoped>
 .wrapper {
-  --day-width: 100%;
   --time-width: 110px;
   --slot-height: 60px;
-  width: calc(var(--time-width) + var(--day-width) * 5 + 40px);
+  width: 100%;
+  --day-width: calc((100% - var(--time-width)) / 5 - 7px);
   padding: 10px;
-  background-color: rgba(173, 216, 230, 0.71);
+  background-color: rgba(151, 201, 255, 0.348);
+  backdrop-filter: blur(2px);
   border-radius: 15px;
-  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .titles {
@@ -177,11 +183,11 @@ p {
 .schedule {
   margin: 0;
   padding-top: calc(var(--slot-height) / 2);
+  width: var(--day-width);
 }
 
 .timeslot {
   margin: 0 0 5px;
-  width: var(--day-width);
   height: var(--slot-height);
   background-color: mediumspringgreen;
   border-radius: 10px;
@@ -202,5 +208,9 @@ p {
   cursor: pointer;
   transform: scale(1.05, 1.05);
   transition: all 0.3s ease;
+}
+
+.amount-0:hover {
+  cursor: not-allowed;
 }
 </style>

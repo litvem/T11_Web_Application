@@ -70,7 +70,7 @@ export default {
       let date = new Date(this.schedule[0].date);
       let mon = date.getDate() - date.getDay() + 1;
       for (let i = 0; i < 7; i++) {
-        this.week[i].date = new Date(date.setDate(mon + i))
+        this.week[i].date = new Date(date.setUTCDate(mon + i))
           .toISOString()
           .split("T")[0];
         mon = date.getDate() - date.getDay() + 1;

@@ -31,7 +31,8 @@
             >Search</b-button>
         </div>
         <div class="filtered-schedule">
-          <b-button
+          <schedule :schedule="schedule" :key="schedule" />
+          <!--<b-button
             id="sample-button"
             variant="outline-secondary"
             v-b-modal.modal-prevent-closing
@@ -42,7 +43,7 @@
             variant="outline-secondary"
             v-b-modal.error_message
             >Error trigger</b-button
-          >
+          >-->
           <!--spinner while waiting filtered response
           <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
@@ -116,12 +117,14 @@
 <script>
 import { Api } from "../Api.js";
 import Map from "../components/Map.vue";
+import Schedule from "../components/Schedule.vue";
 import { ref, onMounted } from "vue";
 import mqtt from "mqtt";
 
 export default {
   components: {
     Map,
+    Schedule
   },
   data() {
     return {
@@ -142,6 +145,7 @@ export default {
     let dentists = ref([]);
     let sessionId = "";
     let initialInterval = ref("");
+    let schedule = ref([]);
 
     onMounted(() => {
       const host = "ws://localhost:9001";
@@ -160,11 +164,9 @@ export default {
 
       Api.post('/sessions')
           .then(response => {
-            console.log(response);
             sessionId = response.data.user;
             console.log(sessionId);
             initialInterval.value = JSON.stringify(response.data.interval)
-            console.log(initialInterval.value);
             mqttClient.publish("schedule/initial/request", initialInterval.value, 1 );
           })
           .catch(err => {
@@ -173,7 +175,7 @@ export default {
 
       mqttClient.on("message", function (topic, message) {
         switch (topic) {
-          case (topic="data/dentist/response"):
+          case ("data/dentist/response"):
             var arrayOfDentists = JSON.parse(message.toString());
             dentists.value = [];
             arrayOfDentists.map((dentist) => {
@@ -187,8 +189,8 @@ export default {
               });
             });
             break;
-          case (topic="schedule/initial/response"):
-            console.log(message.toString())
+          case ("schedule/initial/response"):
+            schedule.value= JSON.parse(message.toString());
             mqttClient.unsubscribe("schedule/initial/response");
         }
       });
@@ -210,7 +212,7 @@ export default {
       console.log(`schedule/response/${fromTo.from}-${fromTo.to}`)
     };
 
-    return { message, dentists, initialInterval, subscribeToSchedule, publishSchedule };
+    return { message, dentists, schedule, initialInterval, subscribeToSchedule, publishSchedule };
   },
   methods: {
     getDate() {

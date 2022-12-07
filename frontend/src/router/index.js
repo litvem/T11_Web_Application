@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import HomeView from "../views/HomeView.vue";
+import scheduleView from "@/views/ScheduleView.vue";
 
 Vue.use(VueRouter);
 
@@ -14,20 +15,11 @@ const router = new VueRouter({
       component: HomeView,
     },
     {
-      path: "/map",
-      name: "map",
-      component() {
-        return import("../components/Map.vue")
-      }
-    }
-    {
       path: "/schedule",
       name: "schedule",
-      component() {
-        return import("../views/ScheduleView.vue")
-      },
-    },
-  ],
+      component: scheduleView
+    }
+  ]
 });
 
 export default router;

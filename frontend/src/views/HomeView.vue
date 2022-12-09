@@ -8,7 +8,7 @@
     </div>
     <section>
       <div class="map">
-        <Map :dentistsArray="dentists"/>
+        <!--Map :dentistsArray="dentists"/-->
       </div>
       <div class="schedule-related">
         <!--search related items-->
@@ -27,28 +27,14 @@
               ></b-form-datepicker>
             </div>
           </template>
-          <b-button id="search-button" variant="outline-primary" v-on:click="patchTimeInterval()"
-            >Search</b-button>
+          <b-button
+            id="search-button"
+            variant="outline-primary"
+            v-on:click="patchTimeInterval()"
+            >Search</b-button
+          >
         </div>
         <div class="filtered-schedule">
-          <b-button
-            id="sample-button"
-            variant="outline-secondary"
-            v-b-modal.modal-prevent-closing
-            >Sample time slot</b-button
-          >
-          <b-button
-            id="error-button"
-            variant="outline-secondary"
-            v-b-modal.error_message
-            >Error trigger</b-button
-          >
-          <b-button
-            id="success-button"
-            variant="outline-secondary"
-            v-b-modal.success_message
-            >Success trigger</b-button
-          >
           <!--spinner while waiting filtered response
           <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
@@ -102,33 +88,82 @@
       </template>
     </b-modal>
     <!--modal to display error message-->
-    <b-modal id="error_message" ref="modal"
-      ><h5>Error occured during your booking. Please try again.</h5>
-      <template #modal-footer="{ cancel }">
-        <!--Emulate built in modal footer ok and cancel button actions-->
-        <b-button size="md" variant="outline-primary" @click="cancel()">
-          OK
-        </b-button>
-      </template>
-    </b-modal>
+    <div v-if="error_message" :key="error_message">
+      <b-modal id="error_message" v-model="error_message" ref="modal"
+        ><h5>Error occured during your booking. Please try again later.</h5>
+        <template #modal-footer="{ cancel }">
+          <!--Emulate built in modal footer ok and cancel button actions-->
+          <b-button size="md" variant="outline-primary" @click="cancel()">
+            OK
+          </b-button>
+        </template>
+      </b-modal>
+    </div>
+    <!--modal in case of circuit breaker open/closed-->
+    <div v-if="circuit_breaker">
+      <b-modal
+        id="cb"
+        v-model="circuit_breaker"
+        ref="modal"
+        hide-header="true"
+        hide-footer="true"
+        centered
+        no-close-on-esc
+        no-close-on-backdrop
+        ><div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding-top: 5%;
+            margin-bottom: 5%;
+          "
+        >
+          <b-icon
+            id="warning_sign"
+            icon="exclamation-triangle-fill"
+            variant="danger"
+            animation="fade"
+          ></b-icon>
+        </div>
+        <h5 id="cb_body">Service temporarily unavailable.</h5>
+      </b-modal>
+    </div>
+    <div v-else></div>
     <!--modal to display success message-->
-    <b-modal id="success_message" ref="modal"
-      ><h5>
-        Your booking was successful. <br />
-        Confirmation has been sent to you via email.
-      </h5>
-      <template #modal-footer="{ cancel }">
-        <!--Emulate built in modal footer ok and cancel button actions-->
-        <b-button size="md" variant="outline-primary" @click="cancel()">
-          OK
-        </b-button>
-      </template>
-    </b-modal>
-    <!--<h1>{{ test }}</h1>
-    <h1>{{ list }}</h1>
-    <input type="text" v-model="message" value="" />
-    <button @click="publishMessage(message)">publish</button>
-    <button @click="sub">sub</button>-->
+    <div v-if="success_message" :key="success_message">
+      <b-modal
+        id="success_message"
+        v-model="success_message"
+        hide-header="true"
+        centered
+        ><div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding-top: 5%;
+            margin-bottom: 5%;
+          "
+        >
+          <b-icon
+            id="warning_sign"
+            icon="check-circle-fill"
+            variant="success"
+          ></b-icon>
+        </div>
+        <h5 id="success_text">
+          Your booking was successful. <br />
+          Confirmation has been sent to you via email.
+        </h5>
+        <template #modal-footer="{ cancel }">
+          <!--Emulate built in modal footer OK button action-->
+          <b-button size="md" variant="outline-success" @click="cancel()">
+            OK
+          </b-button>
+        </template>
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -153,23 +188,26 @@ export default {
       topic: "",
     };
   },
-  mounted() {
-    Api.post('/sessions')
-        .then(response => {
-          console.log(response);
-          this.sessionId = response.data.user;
-          console.log(this.sessionId);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+  created() {
+    Api.post("/sessions")
+      .then((response) => {
+        console.log(response);
+        this.sessionId = response.data.user;
+        console.log(this.sessionId);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
   setup() {
     let test = ref("test");
     let mqttClient = null;
     let list = ref(["a"]);
-    let message = "";
+    let message = ref("");
     let dentists = ref([]);
+    let error_message = ref(false);
+    let success_message = ref(false);
+    let circuit_breaker = ref(false);
     onMounted(() => {
       const host = "ws://localhost:9001";
       mqttClient = mqtt.connect(host);
@@ -182,31 +220,44 @@ export default {
         console.log(`mqtt client connected`);
       });
 
-      mqttClient.subscribe("/test", { qos: 1 });
-      mqttClient.subscribe("data/dentist/response", { qos: 0 });
+      mqttClient.subscribe("data/dentist/response", { qos: 1 });
+      mqttClient.subscribe("booking/emailconfirmation", { qos: 2 });
+      mqttClient.subscribe("booking/error/", { qos: 2 });
+      mqttClient.subscribe("circuitbreak/open", { qos: 1 });
+      mqttClient.subscribe("circuitbreak/close", { qos: 1 });
 
       mqttClient.on("message", function (topic, message) {
-        if (topic == "data/dentist/response") {
-          var arrayOfDentists = JSON.parse(message.toString());
-
-          dentists.value = [];
-          arrayOfDentists.map((dentist) => {
-            dentists.value.push({
-              name: dentist.name,
-              coordinate: {
-                longitude: dentist.coordinate.longitude,
-                latitude: dentist.coordinate.latitude,
-              },
-              address: dentist.address,
+        switch (topic) {
+          case "data/dentist/response":
+            var arrayOfDentists = JSON.parse(message.toString());
+            dentists.value = [];
+            arrayOfDentists.map((dentist) => {
+              dentists.value.push({
+                name: dentist.name,
+                coordinate: {
+                  longitude: dentist.coordinate.longitude,
+                  latitude: dentist.coordinate.latitude,
+                },
+                address: dentist.address,
+              });
             });
-          });
+            break;
+          case "booking/emailconfirmation":
+            console.log("booking confirmation received");
+            success_message.value = true;
+            break;
+          case "booking/error":
+            console.log("error message received");
+            error_message.value = true;
+            break;
+          case "circuitbreak/open":
+            console.log("error message received");
+            circuit_breaker.value = true;
+            break;
+          case "circuitbreak/close":
+            console.log("error message received");
+            circuit_breaker.value = false;
         }
-
-        this.dentistsTest = dentists.value;
-        console.log(this.dentistsTest);
-        test.value = message.toString();
-        list.value.push(message.toString());
-        console.log(message.toString());
       });
 
       mqttClient.on("close", () => {
@@ -223,12 +274,19 @@ export default {
       console.log("/sub");
     };
 
-    return { message, test, list,dentists, sub, publishMessage };
+    return {
+      message,
+      test,
+      list,
+      dentists,
+      error_message,
+      success_message,
+      circuit_breaker,
+      sub,
+      publishMessage,
+    };
   },
   methods: {
-    getDate() {
-      console.log(this.date);
-    },
     checkFormValidity() {
       const valid = this.$refs.form.checkValidity();
       this.nameState = valid;
@@ -252,28 +310,22 @@ export default {
       if (!this.checkFormValidity()) {
         return;
       }
-      // Print the concatinated input into console
-      //this.message = this.date + "/" + this.name + "/" + this.email;
-      //console.log(this.message);
-      console.log(this.name);
-      console.log(this.email);
       // Hide the modal manually
       this.$nextTick(() => {
         this.$bvModal.hide("modal-prevent-closing");
       });
     },
-    patchTimeInterval(){
-      Api.patch('/sessions', {
-        date: this.value
+    patchTimeInterval() {
+      Api.patch("/sessions", {
+        date: this.value,
       })
-          .then(response => {
-            console.log(response)
-          })
-          .catch(err => {
-            console.log(err)
-          });
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   },
-
 };
 </script>

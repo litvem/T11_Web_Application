@@ -135,6 +135,33 @@ section .schedule-related .filtered-schedule {
 
 #success_message {
   background-color: #33ff0029;
+  color: rgb(1, 69, 1);
+}
+
+#success_text {
+  font-size: 30px;
+  text-align: center;
+}
+
+#cb {
+  color: rgb(255, 4, 4);
+  background-color: #ff040029;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+#cb_body {
+  font-size: 30px;
+  text-align: center;
+  padding-bottom: 15%;
+}
+
+#warning_sign {
+  margin: 0 auto;
+  width: 20%; 
+  height: 20%;
+  align-self: center;
 }
 
 .modal-header .close {

@@ -167,7 +167,7 @@ export default {
       mqttClient.subscribe("data/dentist/response", { qos: 0 });
 
       mqttClient.on("message", function (topic, message) {
-        if (topic == "data/dentist/response") {
+        if (topic === "data/dentist/response") {
           var arrayOfDentists = JSON.parse(message.toString());
 
           dentists.value = [];
@@ -179,6 +179,13 @@ export default {
                 latitude: dentist.coordinate.latitude,
               },
               address: dentist.address,
+              openinghours: {
+                monday: dentist.openinghours.monday,
+                tuesday: dentist.openinghours.tuesday,
+                wednesday: dentist.openinghours.wednesday,
+                thursday: dentist.openinghours.thursday,
+                friday: dentist.openinghours.friday,
+              }
             });
           });
         }

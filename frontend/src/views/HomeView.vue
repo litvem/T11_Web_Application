@@ -18,7 +18,7 @@
             <div>
               <b-form-datepicker
                 id="datepicker"
-                v-model="value"
+                v-model="date"
                 class="mb-2"
                 today-button
                 reset-button
@@ -125,32 +125,24 @@ export default {
   },
   data() {
     return {
-      value: "",
-      sessionId: "",
+      date: "",
       name: "",
       email: "",
       nameState: null,
       emailState: null,
       topic: "",
+      newInterval: "",
+      previousInterval: "",
+      count: 0
     };
   },
-  mounted() {
-    Api.post('/sessions')
-        .then(response => {
-          console.log(response);
-          this.sessionId = response.data.user;
-          console.log(this.sessionId);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-  },
   setup() {
-    let test = ref("test");
     let mqttClient = null;
-    let list = ref(["a"]);
     let message = "";
     let dentists = ref([]);
+    let sessionId = "";
+    let initialInterval = ref("");
+
     onMounted(() => {
       const host = "ws://localhost:9001";
       mqttClient = mqtt.connect(host);
@@ -163,38 +155,49 @@ export default {
         console.log(`mqtt client connected`);
       });
 
-      mqttClient.subscribe("/test", { qos: 1 });
       mqttClient.subscribe("data/dentist/response", { qos: 0 });
+      mqttClient.subscribe("schedule/initial/response", { qos: 1 });
+
+      Api.post('/sessions')
+          .then(response => {
+            console.log(response);
+            sessionId = response.data.user;
+            console.log(sessionId);
+            initialInterval.value = JSON.stringify(response.data.interval)
+            console.log(initialInterval.value);
+            mqttClient.publish("schedule/initial/request", initialInterval.value, 1 );
+          })
+          .catch(err => {
+            console.log(err);
+          });
 
       mqttClient.on("message", function (topic, message) {
-        if (topic === "data/dentist/response") {
-          var arrayOfDentists = JSON.parse(message.toString());
-
-          dentists.value = [];
-          arrayOfDentists.map((dentist) => {
-            dentists.value.push({
-              name: dentist.name,
-              coordinate: {
-                longitude: dentist.coordinate.longitude,
-                latitude: dentist.coordinate.latitude,
-              },
-              address: dentist.address,
-              openinghours: {
+        switch (topic) {
+          case ("data/dentist/response"):
+            var arrayOfDentists = JSON.parse(message.toString());
+            dentists.value = [];
+            arrayOfDentists.map((dentist) => {
+              dentists.value.push({
+                name: dentist.name,
+                coordinate: {
+                  longitude: dentist.coordinate.longitude,
+                  latitude: dentist.coordinate.latitude,
+                },
+                address: dentist.address,
+                openinghours: {
                 monday: dentist.openinghours.monday,
                 tuesday: dentist.openinghours.tuesday,
                 wednesday: dentist.openinghours.wednesday,
                 thursday: dentist.openinghours.thursday,
                 friday: dentist.openinghours.friday,
               }
+              });
             });
-          });
+            break;
+          case ("schedule/initial/response"):
+            console.log(message.toString())
+            mqttClient.unsubscribe("schedule/initial/response");
         }
-
-        this.dentistsTest = dentists.value;
-        console.log(this.dentistsTest);
-        test.value = message.toString();
-        list.value.push(message.toString());
-        console.log(message.toString());
       });
 
       mqttClient.on("close", () => {
@@ -202,16 +205,19 @@ export default {
       });
       mqttClient.publish("data/dentist/request");
     });
-    const publishMessage = (payload) => {
-      mqttClient.publish("/test", payload);
+
+    const publishSchedule = (oldInterval, latestInterval) => {
+      mqttClient.publish("schedule/request", `{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`,1);
+      console.log(`{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`);
     };
 
-    const sub = () => {
-      mqttClient.subscribe("/sub", { qos: 1 });
-      console.log("/sub");
+    const subscribeToSchedule = (interval) => {
+      const fromTo= JSON.parse(interval);
+      mqttClient.subscribe(`schedule/response/${fromTo.from}-${fromTo.to}`, { qos: 1 });
+      console.log(`schedule/response/${fromTo.from}-${fromTo.to}`)
     };
 
-    return { message, test, list,dentists, sub, publishMessage };
+    return { message, dentists, initialInterval, subscribeToSchedule, publishSchedule };
   },
   methods: {
     getDate() {
@@ -251,11 +257,28 @@ export default {
       });
     },
     patchTimeInterval(){
+      this.count++
+      console.log(this.count)
       Api.patch('/sessions', {
-        date: this.value
+        date: this.date
       })
           .then(response => {
-            console.log(response)
+            if(this.count === 1){
+              console.log(response)
+              this.previousInterval = this.initialInterval;
+              console.log(this.previousInterval);
+              this.newInterval = JSON.stringify(response.data.interval);
+              console.log(this.newInterval);
+              this.subscribeToSchedule(this.newInterval);
+              this.publishSchedule(this.previousInterval,this.newInterval);
+            }else{
+              this.previousInterval = this.newInterval;
+              console.log(this.previousInterval);
+              this.newInterval = JSON.stringify(response.data.interval);
+              console.log(this.newInterval);
+              this.subscribeToSchedule(this.newInterval);
+              this.publishSchedule(this.previousInterval,this.newInterval);
+            }
           })
           .catch(err => {
             console.log(err)

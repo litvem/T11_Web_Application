@@ -15,7 +15,7 @@
         </div>
       </div>
       <div v-for="day in week.length - 2" :class="week[day - 1].day" class="schedule">
-        <div class="timeslot" v-for="time in timestamps.length - 1" :class="`amount-${getTimeSlot(
+        <!--div class="timeslot" v-for="time in timestamps.length - 1" :class="`amount-${getTimeSlot(
           day - 1,
           timestamps[time - 1],
           timestamps[time]
@@ -24,15 +24,23 @@
             Available slots:
             {{ getTimeSlot(day - 1, timestamps[time - 1], timestamps[time]) }}
           </p>
-        </div>
+        </div-->
+        <timeslot v-for="time in timestamps.length - 1" :data="getTimeSlot(
+          day - 1,
+          timestamps[time - 1],
+          timestamps[time]
+        )" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Timeslot from "@/components/Timeslot.vue";
+
 export default {
   name: "schedule",
+  components: { Timeslot },
   props: ["schedule"],
   data() {
     return {
@@ -105,15 +113,12 @@ export default {
      * @param day the index of the day of the timeslot
      * @param fromTimeStamp the starting timestamp of the timeslot
      * @param toTimeStamp the ending timestamp of the timeslot
-     * @returns {number} the number of slots available for booking, 0 if slot doesn't exist
+     * @returns {Array} the timeslot data, or undefined if it doesn't exist
      */
     getTimeSlot(day, fromTimeStamp, toTimeStamp) {
-      let slot =
-        this.week[day].schedule[
-        this.getTimeSlotKey(fromTimeStamp, toTimeStamp)
-        ];
-
-      return slot ? slot.map((s) => s["slots"]).reduce((acc, s) => acc + s) : 0;
+      return this.week[day].schedule[
+            this.getTimeSlotKey(fromTimeStamp, toTimeStamp)
+          ]; // ? slot.map((s) => s["slots"]).reduce((acc, s) => acc + s) : 0;
     },
   },
 };
@@ -126,9 +131,6 @@ export default {
   width: 100%;
   --day-width: calc((100% - var(--time-width)) / 5 - 7px);
   padding: 10px;
-  background-color: rgba(151, 201, 255, 0.348);
-  backdrop-filter: blur(2px);
-  border-radius: 15px;
   display: flex;
   flex-direction: column;
 }
@@ -141,6 +143,7 @@ export default {
   display: flex;
   align-content: center;
   justify-content: space-between;
+  padding-right: 2%;
 }
 
 p {
@@ -161,7 +164,7 @@ p {
   align-content: center;
   justify-content: space-between;
   margin: 0;
-  padding: 0;
+  padding-right: 2%;
 
   overflow-y: scroll;
   scroll-behavior: smooth;
@@ -189,19 +192,19 @@ p {
 .timeslot {
   margin: 0 0 5px;
   height: var(--slot-height);
-  background-color: mediumspringgreen;
-  border-radius: 10px;
+  background-color: rgba(0, 250, 154, 0.53);
   display: flex;
   align-content: center;
   transition: all 0.3s ease;
 }
 
 .amount-0 {
-  background-color: palevioletred;
+  color: #606060;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .amount-1 {
-  background-color: lemonchiffon;
+  background-color: rgba(231, 216, 91, 0.2);
 }
 
 .timeslot:hover {
@@ -212,5 +215,6 @@ p {
 
 .amount-0:hover {
   cursor: not-allowed;
+  transform: none;
 }
 </style>

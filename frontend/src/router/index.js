@@ -12,13 +12,6 @@ const router = new VueRouter({
       path: "/",
       name: "home",
       component: HomeView,
-    },
-    {
-      path: "/map",
-      name: "map",
-      component() {
-        return import("../components/Map.vue")
-      }
     }
   ],
 });

@@ -184,6 +184,13 @@ export default {
                   latitude: dentist.coordinate.latitude,
                 },
                 address: dentist.address,
+                openinghours: {
+                monday: dentist.openinghours.monday,
+                tuesday: dentist.openinghours.tuesday,
+                wednesday: dentist.openinghours.wednesday,
+                thursday: dentist.openinghours.thursday,
+                friday: dentist.openinghours.friday,
+              }
               });
             });
             break;

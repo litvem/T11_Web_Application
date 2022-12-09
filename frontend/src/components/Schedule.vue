@@ -29,6 +29,9 @@
           day - 1,
           timestamps[time - 1],
           timestamps[time]
+        )" :day="week[day - 1].day" :timeslot="getTimeSlotKey(
+          timestamps[time - 1],
+          timestamps[time]
         )" />
       </div>
     </div>

@@ -9,8 +9,17 @@
       <gmap-marker
           :key="index"
           v-for="(m,index) in markers"
-          :position="m.position">
+          :position="m.position"
+          @click="toggleInfoWindow(m, index)">
       </gmap-marker>
+      <gmap-info-window
+      :options="infoOptions"
+      :position="infoWindowPos"
+      :opened="infoWinOpen"
+      @closeclick="infoWinOpen=false"
+      >
+        <div v-html="infoContent"></div>
+      </gmap-info-window>
     </GmapMap>
 </template>
 
@@ -23,7 +32,20 @@ export default {
       map: null,
       center: { lat: 0, lng: 0 },
       currentPlace: null,
-      dentists: [],
+      infoContent:'',
+      infoWindowPos: {
+        lat: 0,
+        lng: 0
+      },
+      infoWinOpen: false,
+      currentMidx: null,
+      fullscreenChange: false,
+      infoOptions: {
+        pixelOffset: {
+          width: 0,
+          height: -35
+        }
+      },
       places: [],
       coordinates: {
         lat: 0,
@@ -43,17 +65,20 @@ export default {
   },
   computed: {
     markers() {
-      return this.dentistsArray.map(({ name, coordinate: { longitude, latitude }, address }) => ({
-        name: {
-          name,
-          color: '#de1313',
-          fontsize: '100px'
-        },
+      return this.dentistsArray.map(({ name, coordinate: { longitude, latitude }, address, openinghours: {monday,
+      tuesday, wednesday, thursday, friday} }) => ({
+        name,
         address,
         position: {
           lng: longitude,
           lat: latitude
-        }
+        },
+        coordinate: { longitude, latitude },
+        openinghours: {monday,
+        tuesday,
+        wednesday,
+        thursday ,
+        friday }
       }))
     }
   },
@@ -69,6 +94,46 @@ export default {
         },
         setPlace(place) {
           this.currentPlace = place
+        },
+        toggleInfoWindow: function (marker, idx) {
+          this.infoWindowPos = marker.position
+          this.infoContent = this.getInfoWindowContent(marker)
+          if (this.currentMidx === idx) {
+            this.infoWinOpen = !this.infoWinOpen
+          } else {
+            this.infoWinOpen = true
+            this.currentMidx = idx
+          }
+        },
+        getInfoWindowContent: function (dentistsArray) {
+          return (`<div class="">
+          <div>
+            <div>
+              <div class="m-2"><span style="font-weight: bold;">Address: </span>
+                ${dentistsArray.address}
+              </div>
+            </div>
+            <div class="m-2"><span style="font-weight: bold;">Name:  </span>
+              ${dentistsArray.name}
+              <br>
+            </div>
+            <div class="m-2"><span style="font-weight: bold;">Openinghours:  </span>
+            <br>
+            monday:
+              ${dentistsArray.openinghours.monday}
+              <br>
+               tuesday:
+              ${dentistsArray.openinghours.tuesday}
+              <br> wednesday:
+              ${dentistsArray.openinghours.wednesday}
+              <br> thursday:
+              ${dentistsArray.openinghours.thursday}
+              <br> friday:
+              ${dentistsArray.openinghours.friday}
+              <br>
+            </div>
+          </div>
+        </div>`)
         }
       }
 }

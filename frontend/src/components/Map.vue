@@ -119,16 +119,16 @@ export default {
             </div>
             <div class="m-2"><span style="font-weight: bold;">Openinghours:  </span>
             <br>
-            monday:
+            Monday:
               ${dentistsArray.openinghours.monday}
               <br>
-               tuesday:
+               Tuesday:
               ${dentistsArray.openinghours.tuesday}
-              <br> wednesday:
+              <br> Wednesday:
               ${dentistsArray.openinghours.wednesday}
-              <br> thursday:
+              <br> Thursday:
               ${dentistsArray.openinghours.thursday}
-              <br> friday:
+              <br> Friday:
               ${dentistsArray.openinghours.friday}
               <br>
             </div>

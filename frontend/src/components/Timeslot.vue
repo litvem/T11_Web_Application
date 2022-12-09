@@ -11,12 +11,19 @@ export default {
   name: "timeslot",
   props: ["data"],
   computed: {
+    /**
+     * Returns the number of available slots for the timeslot
+     * @returns {number} the reduced number of the data array
+     */
     available() {
-      console.log(this.data)
       return this.data ? this.data.map((s) => s["slots"]).reduce((acc, s) => acc + s) : 0;
     },
+    /**
+     * Checks whether the timeslot is bookable or not
+     * @returns {boolean} whether there are slots available or not
+     */
     bookable() {
-      return this.available() > 0;
+      return this.available > 0;
     }
   }
 }

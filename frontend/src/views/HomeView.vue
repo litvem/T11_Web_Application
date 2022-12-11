@@ -11,8 +11,9 @@
         <!--Map :dentistsArray="dentists"/-->
       </div>
       <div class="schedule-related">
-        <!--search related items-->
+        <!--SEARCH related items-->
         <div class="search">
+          <!--DATEPICKER-->
           <label for="datepicker">Select a date</label>
           <template class="w-50 p-3">
             <div>
@@ -27,6 +28,7 @@
               ></b-form-datepicker>
             </div>
           </template>
+          <!--SEARCH BUTTON-->
           <b-button
             id="search-button"
             variant="outline-primary"
@@ -35,12 +37,12 @@
           >
         </div>
         <div class="filtered-schedule">
-          <!--spinner while waiting filtered response
+          <!--SPINNER while waiting filtered response
           <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
       </div>
     </section>
-    <!--modal to get name and email of the user-->
+    <!--MODAL to get name and email of the user-->
     <b-modal
       id="modal-prevent-closing"
       ref="modal"
@@ -87,19 +89,42 @@
         </b-button>
       </template>
     </b-modal>
-    <!--modal to display error message-->
+    <!--MODAL to display error message-->
     <div v-if="error_message" :key="error_message">
-      <b-modal id="error_message" v-model="error_message" ref="modal"
-        ><h5>Error occured during your booking. Please try again later.</h5>
+      <b-modal
+        id="error_message"
+        v-model="error_message"
+        hide-header="true"
+        centered
+        ref="modal"
+        ><div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding-top: 5%;
+            margin-bottom: 5%;
+          "
+        >
+          <b-icon
+            id="warning_sign"
+            icon="exclamation-triangle-fill"
+            variant="danger"
+          ></b-icon>
+        </div>
+        <h5 id="error_body">
+          Error occured during your booking. <br />
+          Please try again later.
+        </h5>
         <template #modal-footer="{ cancel }">
           <!--Emulate built in modal footer ok and cancel button actions-->
-          <b-button size="md" variant="outline-primary" @click="cancel()">
+          <b-button size="md" variant="outline-danger" @click="cancel()">
             OK
           </b-button>
         </template>
       </b-modal>
     </div>
-    <!--modal in case of circuit breaker open/closed-->
+    <!--MODAL in case of circuit breaker open/closed-->
     <div v-if="circuit_breaker">
       <b-modal
         id="cb"
@@ -130,7 +155,7 @@
       </b-modal>
     </div>
     <div v-else></div>
-    <!--modal to display success message-->
+    <!--MODAL to display success message-->
     <div v-if="success_message" :key="success_message">
       <b-modal
         id="success_message"
@@ -180,7 +205,6 @@ export default {
   data() {
     return {
       value: "",
-      sessionId: "",
       name: "",
       email: "",
       nameState: null,
@@ -188,27 +212,32 @@ export default {
       topic: "",
     };
   },
-  created() {
-    Api.post("/sessions")
-      .then((response) => {
-        console.log(response);
-        this.sessionId = response.data.user;
-        console.log(this.sessionId);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  },
   setup() {
-    let test = ref("test");
     let mqttClient = null;
-    let list = ref(["a"]);
-    let message = ref("");
+    let sessionId = ref("");
     let dentists = ref([]);
     let error_message = ref(false);
     let success_message = ref(false);
     let circuit_breaker = ref(false);
-    onMounted(() => {
+
+    const post = () =>
+      new Promise((resolve, reject) => {
+        Api.post("/sessions")
+          .then((response) => {
+            console.log(response);
+            sessionId.value = response.data.user;
+            console.log(sessionId.value);
+            resolve();
+          })
+          .catch((err) => {
+            console.log(err);
+            reject();
+          });
+      });
+
+    onMounted(async () => {
+      await post();
+
       const host = "ws://localhost:9001";
       mqttClient = mqtt.connect(host);
       mqttClient.on("error", (err) => {
@@ -221,8 +250,10 @@ export default {
       });
 
       mqttClient.subscribe("data/dentist/response", { qos: 1 });
-      mqttClient.subscribe("booking/emailconfirmation", { qos: 2 });
-      mqttClient.subscribe("booking/error/", { qos: 2 });
+      mqttClient.subscribe(`booking/emailconfirmation/${sessionId.value}`, {
+        qos: 2,
+      });
+      mqttClient.subscribe(`booking/error/${sessionId.value}`, { qos: 2 });
       mqttClient.subscribe("circuitbreak/open", { qos: 1 });
       mqttClient.subscribe("circuitbreak/close", { qos: 1 });
 
@@ -242,20 +273,20 @@ export default {
               });
             });
             break;
-          case "booking/emailconfirmation":
+          case `booking/emailconfirmation/${sessionId.value}`:
             console.log("booking confirmation received");
             success_message.value = true;
             break;
-          case "booking/error":
+          case `booking/error/${sessionId.value}`:
             console.log("error message received");
             error_message.value = true;
             break;
           case "circuitbreak/open":
-            console.log("error message received");
+            console.log("circuit breaker open, servises stopped");
             circuit_breaker.value = true;
             break;
           case "circuitbreak/close":
-            console.log("error message received");
+            console.log("circuit breaker closed, servises resumed");
             circuit_breaker.value = false;
         }
       });
@@ -275,9 +306,6 @@ export default {
     };
 
     return {
-      message,
-      test,
-      list,
       dentists,
       error_message,
       success_message,
@@ -325,7 +353,7 @@ export default {
         .catch((err) => {
           console.log(err);
         });
-    }
+    },
   },
 };
 </script>

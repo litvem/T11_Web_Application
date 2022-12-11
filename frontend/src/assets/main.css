@@ -84,7 +84,6 @@ section .map {
 }
 
 section .schedule-related {
-  background-color: #1082e03c;
   width: 60%;
   height: 100%;
   display: flex;
@@ -155,6 +154,13 @@ section .schedule-related .filtered-schedule {
   font-size: 30px;
   text-align: center;
   padding-bottom: 15%;
+}
+
+#error_body {
+  font-size: 30px;
+  text-align: center;
+  padding-bottom: 5%;
+  color: rgb(255, 4, 4);
 }
 
 #warning_sign {

@@ -230,7 +230,7 @@
 import { Api } from "../Api.js";
 import Map from "../components/Map.vue";
 import { ref, onMounted } from "vue";
-import mqtt from "mqtt";
+import mqttClient from "../mqttClient";
 
 export default {
   components: {
@@ -247,7 +247,6 @@ export default {
     };
   },
   setup() {
-    let mqttClient = null;
     let sessionId = ref("");
     let dentists = ref([]);
     let error_message = ref(false);
@@ -273,8 +272,6 @@ export default {
     onMounted(async () => {
       await post();
 
-      const host = "ws://localhost:9001";
-      mqttClient = mqtt.connect(host);
       mqttClient.on("error", (err) => {
         console.log(err);
         mqttClient.end();

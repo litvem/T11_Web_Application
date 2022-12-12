@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-b-modal="`timeslot-modal-${day}-${timeslot}`" class="timeslot" :class="`amount-${available}`">
+    <div v-b-modal="`timeslot-modal-${day}-${timeslot}`" class="timeslot" :class="`amount-${available}`" >
       <p class="slot">
         Available slots: {{ available }}
       </p>
@@ -56,7 +56,7 @@
         >
           <b-form-input
               id="dentist"
-              :value="getName(dentistID)"
+              v-model="dentistName"
               disabled
           ></b-form-input>
         </b-form-group>
@@ -98,6 +98,7 @@ export default {
   data() {
     return {
       dentistID: null,
+      dentistName: null,
       name: "",
       email: "",
       nameState: null,
@@ -107,12 +108,12 @@ export default {
   methods: {
     onClick(dentist) {
       this.dentistID = dentist;
+      this.dentistName = this.getName(dentist)
       this.$bvModal.hide(`timeslot-modal-${this.day}-${this.timeslot}`);
     },
     getName(dentist) {
-      let index = this.dentists.map(d => d.dentistId);
-
-      return this.dentists[index.indexOf(dentist)].name;
+      let name = this.dentists[this.index.indexOf(dentist)].name;
+      return name;
     },
     cancelInfo() {
       this.resetInfoModal();
@@ -120,6 +121,7 @@ export default {
     },
     resetInfoModal() {
       this.dentistID = null;
+      this.dentistName = null;
       this.name = "";
       this.email = "";
       this.nameState = null;
@@ -162,6 +164,9 @@ export default {
      */
     bookable() {
       return this.available > 0;
+    },
+    index() {
+      return this.dentists.map(d => d.dentistId);
     }
   }
 }

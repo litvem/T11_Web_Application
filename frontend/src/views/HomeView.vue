@@ -120,6 +120,7 @@ import Map from "../components/Map.vue";
 import Schedule from "../components/Schedule.vue";
 import { ref, onMounted } from "vue";
 import mqtt from "mqtt";
+//import mqttClient from "../mqttClient";
 
 export default {
   components: {
@@ -217,6 +218,16 @@ export default {
       });
     };
 
+    window.onbeforeunload = function(){
+      Api.patch('/sessions', {
+        date: new Date().toString()
+      })
+          .then(response => {
+            initialInterval.value = JSON.stringify(response.data.interval);
+          });
+      mqttClient.publish("schedule/remove/client",`${initialInterval.value}`)
+    };
+
     return { message, dentists, schedule, initialInterval, subscribeToSchedule, publishSchedule };
   },
   methods: {
@@ -258,24 +269,18 @@ export default {
     },
     patchTimeInterval(){
       this.count++
-      console.log(this.count)
       Api.patch('/sessions', {
         date: this.date
       })
           .then(response => {
             if(this.count === 1){
-              console.log(response)
               this.previousInterval = this.initialInterval;
-              console.log(this.previousInterval);
               this.newInterval = JSON.stringify(response.data.interval);
-              console.log(this.newInterval);
               this.subscribeToSchedule(this.newInterval);
               this.publishSchedule(this.previousInterval,this.newInterval);
             }else{
               this.previousInterval = this.newInterval;
-              console.log(this.previousInterval);
               this.newInterval = JSON.stringify(response.data.interval);
-              console.log(this.newInterval);
               this.subscribeToSchedule(this.newInterval);
               this.publishSchedule(this.previousInterval,this.newInterval);
             }

@@ -145,7 +145,7 @@
           "
         >
           <b-icon
-            id="warning_sign"
+            id="error_sign"
             icon="exclamation-triangle-fill"
             variant="danger"
             animation="fade"
@@ -155,6 +155,40 @@
       </b-modal>
     </div>
     <div v-else></div>
+    <!--MODAL to display message when booking is made, but no email sent-->
+    <div v-if="no_email_message" :key="no_email_message">
+      <b-modal
+        id="success_message"
+        v-model="no_email_message"
+        hide-header="true"
+        centered
+        ><div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding-top: 5%;
+            margin-bottom: 5%;
+          "
+        >
+          <b-icon
+            id="warning_sign"
+            icon="check-circle-fill"
+            variant="success"
+          ></b-icon>
+        </div>
+        <h5 id="success_text">
+          Your booking is confirmed at TIME on DATE at CLINIC. <br />
+          Confirmation has been sent to EMAIL HERE.
+        </h5>
+        <template #modal-footer="{ cancel }">
+          <!--Emulate built in modal footer OK button action-->
+          <b-button size="md" variant="outline-success" @click="cancel()">
+            OK
+          </b-button>
+        </template>
+      </b-modal>
+    </div>
     <!--MODAL to display success message-->
     <div v-if="success_message" :key="success_message">
       <b-modal
@@ -218,6 +252,7 @@ export default {
     let dentists = ref([]);
     let error_message = ref(false);
     let success_message = ref(false);
+    let no_email_message = ref(false);
     let circuit_breaker = ref(false);
 
     const post = () =>
@@ -250,7 +285,10 @@ export default {
       });
 
       mqttClient.subscribe("data/dentist/response", { qos: 1 });
-      mqttClient.subscribe(`booking/emailconfirmation/${sessionId.value}`, {
+      mqttClient.subscribe(`emailconfirmation/${sessionId.value}`, {
+        qos: 2,
+      });
+      mqttClient.subscribe(`emailconfirmation/error/${sessionId.value}`, {
         qos: 2,
       });
       mqttClient.subscribe(`booking/error/${sessionId.value}`, { qos: 2 });
@@ -273,9 +311,13 @@ export default {
               });
             });
             break;
-          case `booking/emailconfirmation/${sessionId.value}`:
+          case `emailconfirmation/${sessionId.value}`:
             console.log("booking confirmation received");
             success_message.value = true;
+            break;
+          case `emailconfirmation/error/${sessionId.value}`:
+            console.log("booking confirmed, no email sent");
+            no_email_message.value = true;
             break;
           case `booking/error/${sessionId.value}`:
             console.log("error message received");
@@ -307,8 +349,9 @@ export default {
 
     return {
       dentists,
-      error_message,
       success_message,
+      no_email_message,
+      error_message,
       circuit_breaker,
       sub,
       publishMessage,

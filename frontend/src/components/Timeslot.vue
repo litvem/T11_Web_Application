@@ -39,6 +39,7 @@
     <b-modal
       :id="`booking-modal-${day}-${timeslot}`"
       @cancel="cancelInfo"
+      @ok="handleSubmit"
     >
       <template #modal-header>
         <div style="width: 100%; display: flex; justify-content: center">
@@ -92,9 +93,10 @@
 </template>
 
 <script>
+import mqttClient from "../mqttClient";
 export default {
   name: "timeslot",
-  props: ["data", "day", "timeslot", "dentists"],
+  props: ["data", "day", "date", "timeslot", "dentists", "sessionId"],
   data() {
     return {
       dentistID: null,
@@ -143,6 +145,20 @@ export default {
       //console.log(this.message);
       console.log(this.name);
       console.log(this.email);
+
+      let message = {
+        name: this.name,
+        dentistid: this.dentistID,
+        userid: this.email,
+        issuance: Date.now(),
+        time: this.timeslot,
+        sessionid: this.sessionId,
+        date: this.date,
+      };
+
+      mqttClient.publish("booking/request", JSON.stringify(message))
+
+
       // Hide the modal manually
       this.$nextTick(() => {
         this.$bvModal.hide(`booking-modal-${this.day}-${this.timeslot}`);

@@ -8,7 +8,7 @@
     </div>
     <section>
       <div class="map">
-        <Map :dentistsArray="dentists"/>
+        <!--<Map :dentistsArray="dentists"/>-->
       </div>
       <div class="schedule-related">
         <!--SEARCH related items-->
@@ -37,7 +37,7 @@
           >
         </div>
         <div class="filtered-schedule">
-          <schedule :schedule="schedule" :key="schedule" :dentistsArray="dentists" />
+          <schedule :schedule="schedule" :key="schedule" :dentistsArray="dentists" :session="sessionId"/>
           <!--SPINNER while waiting filtered response
           <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
@@ -229,7 +229,7 @@
 
 <script>
 import { Api } from "../Api.js";
-import Map from "../components/Map.vue";
+//import Map from "../components/Map.vue";
 import Schedule from "../components/Schedule.vue";
 import { ref, onMounted } from "vue";
 import mqttClient from "../mqttClient";
@@ -269,6 +269,8 @@ export default {
             console.log(response);
             sessionId.value = response.data.user;
             console.log(sessionId.value);
+            initialInterval.value = JSON.stringify(response.data.interval)
+            mqttClient.publish("schedule/initial/request", initialInterval.value, 1 );
             resolve();
           })
           .catch((err) => {
@@ -308,6 +310,7 @@ export default {
             dentists.value = [];
             arrayOfDentists.map((dentist) => {
               dentists.value.push({
+                dentistId: dentist.id,
                 name: dentist.name,
                 coordinate: {
                   longitude: dentist.coordinate.longitude,
@@ -377,6 +380,7 @@ export default {
       dentists,
       schedule,
       initialInterval,
+      sessionId,
       subscribeToSchedule,
       publishSchedule,
       success_message,

@@ -29,7 +29,7 @@
               v-if="dentist.slots > 0 && bookable"
               @click="onClick(dentist.dentist)"
           >
-            <p>Dentist {{ dentist.dentist }}</p>
+            <p>{{ getName(dentist.dentist) }}</p>
             <p>Available slots: {{ dentist.slots }}</p>
           </div>
         </div>
@@ -56,7 +56,7 @@
         >
           <b-form-input
               id="dentist"
-              v-model="dentistID"
+              :value="getName(dentistID)"
               disabled
           ></b-form-input>
         </b-form-group>
@@ -94,7 +94,7 @@
 <script>
 export default {
   name: "timeslot",
-  props: ["data", "day", "timeslot"],
+  props: ["data", "day", "timeslot", "dentists"],
   data() {
     return {
       dentistID: null,
@@ -108,6 +108,11 @@ export default {
     onClick(dentist) {
       this.dentistID = dentist;
       this.$bvModal.hide(`timeslot-modal-${this.day}-${this.timeslot}`);
+    },
+    getName(dentist) {
+      let index = this.dentists.map(d => d.dentistId);
+
+      return this.dentists[index.indexOf(dentist)].name;
     },
     cancelInfo() {
       this.resetInfoModal();

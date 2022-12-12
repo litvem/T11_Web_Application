@@ -31,7 +31,7 @@
             >Search</b-button>
         </div>
         <div class="filtered-schedule">
-          <schedule :schedule="schedule" :key="schedule" />
+          <schedule :schedule="schedule" :key="schedule" :dentistsArray="dentists" />
           <!--<b-button
             id="sample-button"
             variant="outline-secondary"
@@ -180,6 +180,7 @@ export default {
             dentists.value = [];
             arrayOfDentists.map((dentist) => {
               dentists.value.push({
+                dentistId: dentist.id,
                 name: dentist.name,
                 coordinate: {
                   longitude: dentist.coordinate.longitude,

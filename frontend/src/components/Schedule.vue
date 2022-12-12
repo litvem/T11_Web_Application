@@ -25,7 +25,7 @@
             {{ getTimeSlot(day - 1, timestamps[time - 1], timestamps[time]) }}
           </p>
         </div-->
-        <timeslot v-for="time in timestamps.length - 1" :data="getTimeSlot(
+        <timeslot v-for="time in timestamps.length - 1" :dentists="dentistsArray"  :data="getTimeSlot(
           day - 1,
           timestamps[time - 1],
           timestamps[time]
@@ -44,7 +44,7 @@ import Timeslot from "@/components/Timeslot.vue";
 export default {
   name: "schedule",
   components: { Timeslot },
-  props: ["schedule"],
+  props: ["schedule","dentistsArray"],
   data() {
     return {
       week: [

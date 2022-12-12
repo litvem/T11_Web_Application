@@ -1,7 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 // import * as VueGoogleMaps from 'vue2-google-maps'
 import VueGeoLocation from 'vue-browser-geolocation'
 import GmapVue from 'gmap-vue'
@@ -17,9 +17,9 @@ Vue.use(GmapVue, {
     libraries: 'places'
   }
 })
-Vue.use(VueGeoLocation)
-
+Vue.use(VueGeoLocation);
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 new Vue({
   router,

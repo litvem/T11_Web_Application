@@ -1,16 +1,12 @@
 <template>
   <div>
-    <div v-b-modal="`timeslot-modal-${day}-${timeslot}`" class="timeslot" :class="`amount-${available}`" >
+    <div v-b-modal="`timeslot-modal-${day}-${timeslot}`" class="timeslot" :class="`amount-${available}`">
       <p class="slot">
         Available slots: {{ available }}
       </p>
     </div>
     <!-- Modal displaying dentists' slots -->
-    <b-modal
-        :id="`timeslot-modal-${day}-${timeslot}`"
-        v-if="bookable"
-        :hide-footer="true"
-    >
+    <b-modal :id="`timeslot-modal-${day}-${timeslot}`" v-if="bookable" :hide-footer="true">
       <template #modal-header>
         <div style="width: 100%; display: flex; justify-content: center">
           <h4>
@@ -22,13 +18,8 @@
       </template>
       <div id="modal-wrapper">
         <div id="dentists">
-          <div
-              v-b-modal="`booking-modal-${day}-${timeslot}`"
-              class="dentist-data"
-              v-for="dentist in data"
-              v-if="dentist.slots > 0 && bookable"
-              @click="onClick(dentist.dentist)"
-          >
+          <div v-b-modal="`booking-modal-${day}-${timeslot}`" class="dentist-data" v-for="dentist in data"
+            v-if="dentist.slots > 0 && bookable" @click="onClick(dentist.dentist)">
             <p>{{ getName(dentist.dentist) }}</p>
             <p>Available slots: {{ dentist.slots }}</p>
           </div>
@@ -36,10 +27,7 @@
       </div>
     </b-modal>
     <!-- Modal for user input -->
-    <b-modal
-      :id="`booking-modal-${day}-${timeslot}`"
-      @cancel="cancelInfo"
-    >
+    <b-modal :id="`booking-modal-${day}-${timeslot}`" @cancel="cancelInfo" @ok="handleSubmit">
       <template #modal-header>
         <div style="width: 100%; display: flex; justify-content: center">
           <h4>
@@ -50,41 +38,14 @@
         </div>
       </template>
       <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group
-            label="Dentist"
-            label-for="dentist"
-        >
-          <b-form-input
-              id="dentist"
-              v-model="dentistName"
-              disabled
-          ></b-form-input>
+        <b-form-group label="Dentist" label-for="dentist">
+          <b-form-input id="dentist" v-model="dentistName" disabled></b-form-input>
         </b-form-group>
-        <b-form-group
-            label="Name"
-            label-for="name-input"
-            invalid-feedback="Name is required"
-            :state="nameState"
-        >
-          <b-form-input
-              id="name-input"
-              v-model="name"
-              :state="nameState"
-              required
-          ></b-form-input>
+        <b-form-group label="Name" label-for="name-input" :invalid-feedback="invalidName" :state="nameState">
+          <b-form-input id="name-input" v-model="name" :state="nameState" required></b-form-input>
         </b-form-group>
-        <b-form-group
-            label="Email"
-            label-for="email-input"
-            invalid-feedback="Email is required"
-            :state="emailState"
-        >
-          <b-form-input
-              id="email-input"
-              v-model="email"
-              :state="emailState"
-              required
-          ></b-form-input>
+        <b-form-group label="Email" label-for="email-input" :invalid-feedback="invalidEmail" :state="emailState">
+          <b-form-input id="email-input" v-model="email" :state="emailState" required></b-form-input>
         </b-form-group>
       </form>
     </b-modal>
@@ -102,7 +63,8 @@ export default {
       name: "",
       email: "",
       nameState: null,
-      emailState: null}
+      emailState: null
+    }
 
   },
   methods: {
@@ -133,9 +95,10 @@ export default {
       this.emailState = valid;
       return valid;
     },
-    handleSubmit() {
+    handleSubmit(bvModalEvent) {
       // Exit when the form isn't valid
       if (!this.checkFormValidity()) {
+        bvModalEvent.preventDefault();
         return;
       }
       // Print the concatinated input into console
@@ -167,6 +130,16 @@ export default {
     },
     index() {
       return this.dentists.map(d => d.dentistId);
+    },
+    invalidName() {
+      if (this.name.length == 0) {
+        return 'Name is required';
+      }
+    },
+    invalidEmail() {
+      if (this.email.length == 0) {
+        return 'Email is required'
+      }
     }
   }
 }
@@ -221,7 +194,8 @@ p {
   transition: all 0.3s ease;
 }
 
-.timeslot:hover, .dentist-data:hover {
+.timeslot:hover,
+.dentist-data:hover {
   cursor: pointer;
   transform: scale(1.05, 1.05);
   transition: all 0.3s ease;
@@ -232,7 +206,8 @@ p {
   transform: none;
 }
 
-.timeslot:active, .dentist-data:active {
+.timeslot:active,
+.dentist-data:active {
   transform: scale(0.95, 0.95);
   transition: all 0.1s ease;
 }

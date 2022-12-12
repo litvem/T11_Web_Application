@@ -19,7 +19,7 @@
             <div>
               <b-form-datepicker
                 id="datepicker"
-                v-model="value"
+                v-model="date"
                 class="mb-2"
                 today-button
                 reset-button
@@ -244,6 +244,9 @@ export default {
       nameState: null,
       emailState: null,
       topic: "",
+      newInterval: "",
+      previousInterval: "",
+      count: 0
     };
   },
   setup() {
@@ -335,13 +338,16 @@ export default {
       });
       mqttClient.publish("data/dentist/request");
     });
-    const publishMessage = (payload) => {
-      mqttClient.publish("/test", payload);
+
+    const publishSchedule = (oldInterval, latestInterval) => {
+      mqttClient.publish("schedule/request", `{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`,1);
+      console.log(`{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`);
     };
 
-    const sub = () => {
-      mqttClient.subscribe("/sub", { qos: 1 });
-      console.log("/sub");
+    const subscribeToSchedule = (interval) => {
+      const fromTo= JSON.parse(interval);
+      mqttClient.subscribe(`schedule/response/${fromTo.from}-${fromTo.to}`, { qos: 1 });
+      console.log(`schedule/response/${fromTo.from}-${fromTo.to}`)
     };
 
     return {

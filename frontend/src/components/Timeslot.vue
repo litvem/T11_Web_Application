@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-b-modal="`timeslot-modal-${day}-${timeslot}`" class="timeslot" :class="`amount-${available}`" >
+    <div v-b-modal="`timeslot-modal-${day}-${timeslot}`" class="timeslot" :class="`amount-${available}`">
       <p class="slot">
         Available slots: {{ available }}
       </p>
@@ -104,7 +104,8 @@ export default {
       name: "",
       email: "",
       nameState: null,
-      emailState: null}
+      emailState: null
+    }
 
   },
   methods: {
@@ -135,9 +136,10 @@ export default {
       this.emailState = valid;
       return valid;
     },
-    handleSubmit() {
+    handleSubmit(bvModalEvent) {
       // Exit when the form isn't valid
       if (!this.checkFormValidity()) {
+        bvModalEvent.preventDefault();
         return;
       }
       // Print the concatinated input into console
@@ -183,6 +185,16 @@ export default {
     },
     index() {
       return this.dentists.map(d => d.dentistId);
+    },
+    invalidName() {
+      if (this.name.length == 0) {
+        return 'Name is required';
+      }
+    },
+    invalidEmail() {
+      if (this.email.length == 0) {
+        return 'Email is required'
+      }
     }
   }
 }
@@ -237,7 +249,8 @@ p {
   transition: all 0.3s ease;
 }
 
-.timeslot:hover, .dentist-data:hover {
+.timeslot:hover,
+.dentist-data:hover {
   cursor: pointer;
   transform: scale(1.05, 1.05);
   transition: all 0.3s ease;
@@ -248,7 +261,8 @@ p {
   transform: none;
 }
 
-.timeslot:active, .dentist-data:active {
+.timeslot:active,
+.dentist-data:active {
   transform: scale(0.95, 0.95);
   transition: all 0.1s ease;
 }
@@ -257,3 +271,4 @@ p {
   transform: none;
 }
 </style>
+

@@ -163,7 +163,7 @@ section .schedule-related .filtered-schedule {
   color: rgb(255, 4, 4);
 }
 
-#warning_sign {
+#error_sign, #warning_sign {
   margin: 0 auto;
   width: 20%; 
   height: 20%;

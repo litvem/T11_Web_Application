@@ -94,7 +94,7 @@
       <b-modal
         id="error_message"
         v-model="error_message"
-        hide-header="true"
+        :hide-header="true"
         centered
         ref="modal"
         ><div
@@ -130,8 +130,8 @@
         id="cb"
         v-model="circuit_breaker"
         ref="modal"
-        hide-header="true"
-        hide-footer="true"
+        :hide-header="true"
+        :hide-footer="true"
         centered
         no-close-on-esc
         no-close-on-backdrop
@@ -160,7 +160,7 @@
       <b-modal
         id="success_message"
         v-model="no_email_message"
-        hide-header="true"
+        :hide-header="true"
         centered
         ><div
           style="
@@ -194,7 +194,7 @@
       <b-modal
         id="success_message"
         v-model="success_message"
-        hide-header="true"
+        :hide-header="true"
         centered
         ><div
           style="

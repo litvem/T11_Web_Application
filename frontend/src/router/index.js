@@ -19,7 +19,7 @@ const router = new VueRouter({
       name: "schedule",
       component: scheduleView
     }
-  ]
+  ],
 });
 
 export default router;

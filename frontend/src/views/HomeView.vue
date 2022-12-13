@@ -8,7 +8,7 @@
     </div>
     <section>
       <div class="map">
-        <!--Map :dentistsArray="dentists"/-->
+        <Map :dentistsArray="dentists"/>
       </div>
       <div class="schedule-related">
         <!--SEARCH related items-->
@@ -37,6 +37,7 @@
           >
         </div>
         <div class="filtered-schedule">
+          <schedule :schedule="schedule" :key="schedule" :dentistsArray="dentists" :session="sessionId"/>
           <!--SPINNER while waiting filtered response
           <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
@@ -229,16 +230,18 @@
 <script>
 import { Api } from "../Api.js";
 import Map from "../components/Map.vue";
+import Schedule from "../components/Schedule.vue";
 import { ref, onMounted } from "vue";
 import mqttClient from "../mqttClient";
 
 export default {
   components: {
     Map,
+    Schedule
   },
   data() {
     return {
-      value: "",
+      date: "",
       name: "",
       email: "",
       nameState: null,
@@ -252,6 +255,8 @@ export default {
   setup() {
     let sessionId = ref("");
     let dentists = ref([]);
+    let initialInterval = ref("");
+    let schedule = ref([]);
     let error_message = ref(false);
     let success_message = ref(false);
     let no_email_message = ref(false);
@@ -264,6 +269,8 @@ export default {
             console.log(response);
             sessionId.value = response.data.user;
             console.log(sessionId.value);
+            initialInterval.value = JSON.stringify(response.data.interval)
+            mqttClient.publish("schedule/initial/request", initialInterval.value, 1 );
             resolve();
           })
           .catch((err) => {
@@ -285,6 +292,7 @@ export default {
       });
 
       mqttClient.subscribe("data/dentist/response", { qos: 1 });
+      mqttClient.subscribe("schedule/initial/response", { qos: 1 });
       mqttClient.subscribe(`emailconfirmation/${sessionId.value}`, {
         qos: 2,
       });
@@ -302,14 +310,26 @@ export default {
             dentists.value = [];
             arrayOfDentists.map((dentist) => {
               dentists.value.push({
+                dentistId: dentist.id,
                 name: dentist.name,
                 coordinate: {
                   longitude: dentist.coordinate.longitude,
                   latitude: dentist.coordinate.latitude,
                 },
                 address: dentist.address,
+                openinghours: {
+                  monday: dentist.openinghours.monday,
+                  tuesday: dentist.openinghours.tuesday,
+                  wednesday: dentist.openinghours.wednesday,
+                  thursday: dentist.openinghours.thursday,
+                  friday: dentist.openinghours.friday,
+                },
               });
             });
+            break;
+          case "schedule/initial/response":
+            schedule.value= JSON.parse(message.toString());
+            mqttClient.unsubscribe("schedule/initial/response");
             break;
           case `emailconfirmation/${sessionId.value}`:
             console.log("booking confirmation received");
@@ -347,17 +367,33 @@ export default {
     const subscribeToSchedule = (interval) => {
       const fromTo= JSON.parse(interval);
       mqttClient.subscribe(`schedule/response/${fromTo.from}-${fromTo.to}`, { qos: 1 });
-      console.log(`schedule/response/${fromTo.from}-${fromTo.to}`)
+      mqttClient.on("message", function (topic, message){
+        if (topic === `schedule/response/${fromTo.from}-${fromTo.to}`) {
+          schedule.value= JSON.parse(message.toString());
+        }
+      });
     };
 
+    window.onbeforeunload = function(){
+      Api.patch('/sessions', {
+        date: new Date().toString()
+      })
+          .then(response => {
+            initialInterval.value = JSON.stringify(response.data.interval);
+          });
+      mqttClient.publish("schedule/remove/client",`${initialInterval.value}`)
+    };
     return {
       dentists,
+      schedule,
+      initialInterval,
+      sessionId,
+      subscribeToSchedule,
+      publishSchedule,
       success_message,
       no_email_message,
       error_message,
       circuit_breaker,
-      sub,
-      publishMessage,
     };
   },
   methods: {
@@ -389,17 +425,29 @@ export default {
         this.$bvModal.hide("modal-prevent-closing");
       });
     },
-    patchTimeInterval() {
-      Api.patch("/sessions", {
-        date: this.value,
+    patchTimeInterval(){
+      this.count++
+      Api.patch('/sessions', {
+        date: this.date
       })
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
+          .then(response => {
+            if(this.count === 1){
+              this.previousInterval = this.initialInterval;
+              this.newInterval = JSON.stringify(response.data.interval);
+              this.subscribeToSchedule(this.newInterval);
+              this.publishSchedule(this.previousInterval,this.newInterval);
+            }else{
+              this.previousInterval = this.newInterval;
+              this.newInterval = JSON.stringify(response.data.interval);
+              this.subscribeToSchedule(this.newInterval);
+              this.publishSchedule(this.previousInterval,this.newInterval);
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          });
+    }
   },
+
 };
 </script>

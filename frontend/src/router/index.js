@@ -13,7 +13,7 @@ const router = new VueRouter({
       name: "home",
       component: HomeView,
     }
-  ],
+  ]
 });
 
 export default router;

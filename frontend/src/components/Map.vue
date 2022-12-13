@@ -117,7 +117,7 @@ export default {
               ${dentistsArray.name}
               <br>
             </div>
-            <div class="m-2"><span style="font-weight: bold;">Openinghours:  </span>
+            <div class="m-2"><span style="font-weight: bold;">Opening hours:  </span>
             <br>
             Monday:
               ${dentistsArray.openinghours.monday}

@@ -8,7 +8,7 @@
     </div>
     <section>
       <div class="map">
-        <!--<Map :dentistsArray="dentists"/>-->
+        <Map :dentistsArray="dentists"/>
       </div>
       <div class="schedule-related">
         <!--SEARCH related items-->
@@ -229,7 +229,7 @@
 
 <script>
 import { Api } from "../Api.js";
-//import Map from "../components/Map.vue";
+import Map from "../components/Map.vue";
 import Schedule from "../components/Schedule.vue";
 import { ref, onMounted } from "vue";
 import mqttClient from "../mqttClient";
@@ -317,6 +317,13 @@ export default {
                   latitude: dentist.coordinate.latitude,
                 },
                 address: dentist.address,
+                openinghours: {
+                  monday: dentist.openinghours.monday,
+                  tuesday: dentist.openinghours.tuesday,
+                  wednesday: dentist.openinghours.wednesday,
+                  thursday: dentist.openinghours.thursday,
+                  friday: dentist.openinghours.friday,
+                },
               });
             });
             break;

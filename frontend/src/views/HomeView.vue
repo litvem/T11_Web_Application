@@ -8,7 +8,7 @@
     </div>
     <section>
       <div class="map">
-        <Map :dentistsArray="dentists"/>
+        <Map :dentistsArray="dentists" />
       </div>
       <div class="schedule-related">
         <!--SEARCH related items-->
@@ -37,7 +37,12 @@
           >
         </div>
         <div class="filtered-schedule">
-          <schedule :schedule="schedule" :key="schedule" :dentistsArray="dentists" :session="sessionId"/>
+          <schedule
+            :schedule="schedule"
+            :key="schedule"
+            :dentistsArray="dentists"
+            :session="sessionId"
+          />
           <!--SPINNER while waiting filtered response
           <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
@@ -237,7 +242,7 @@ import mqttClient from "../mqttClient";
 export default {
   components: {
     Map,
-    Schedule
+    Schedule,
   },
   data() {
     return {
@@ -249,7 +254,7 @@ export default {
       topic: "",
       newInterval: "",
       previousInterval: "",
-      count: 0
+      count: 0,
     };
   },
   setup() {
@@ -269,8 +274,12 @@ export default {
             console.log(response);
             sessionId.value = response.data.user;
             console.log(sessionId.value);
-            initialInterval.value = JSON.stringify(response.data.interval)
-            mqttClient.publish("schedule/initial/request", initialInterval.value, 1 );
+            initialInterval.value = JSON.stringify(response.data.interval);
+            mqttClient.publish(
+              "schedule/initial/request",
+              initialInterval.value,
+              1
+            );
             resolve();
           })
           .catch((err) => {
@@ -328,8 +337,9 @@ export default {
             });
             break;
           case "schedule/initial/response":
-            schedule.value= JSON.parse(message.toString());
+            schedule.value = JSON.parse(message.toString());
             mqttClient.unsubscribe("schedule/initial/response");
+            subscribeToSchedule(initialInterval.value);
             break;
           case `emailconfirmation/${sessionId.value}`:
             console.log("booking confirmation received");
@@ -360,28 +370,30 @@ export default {
     });
 
     const publishSchedule = (oldInterval, latestInterval) => {
-      mqttClient.publish("schedule/request", `{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`,1);
-      console.log(`{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`);
+      mqttClient.publish(
+        "schedule/request",
+        `{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`,
+        1
+      );
+      console.log(
+        `{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`
+      );
     };
 
     const subscribeToSchedule = (interval) => {
-      const fromTo= JSON.parse(interval);
-      mqttClient.subscribe(`schedule/response/${fromTo.from}-${fromTo.to}`, { qos: 1 });
-      mqttClient.on("message", function (topic, message){
+      const fromTo = JSON.parse(interval);
+      mqttClient.subscribe(`schedule/response/${fromTo.from}-${fromTo.to}`, {
+        qos: 1,
+      });
+      mqttClient.on("message", function (topic, message) {
         if (topic === `schedule/response/${fromTo.from}-${fromTo.to}`) {
-          schedule.value= JSON.parse(message.toString());
+          schedule.value = JSON.parse(message.toString());
         }
       });
     };
 
-    window.onbeforeunload = function(){
-      Api.patch('/sessions', {
-        date: new Date().toString()
-      })
-          .then(response => {
-            initialInterval.value = JSON.stringify(response.data.interval);
-          });
-      mqttClient.publish("schedule/remove/client",`${initialInterval.value}`)
+    window.onbeforeunload = function () {
+      mqttClient.publish("schedule/remove/client", `${initialInterval.value}`);
     };
     return {
       dentists,
@@ -425,29 +437,28 @@ export default {
         this.$bvModal.hide("modal-prevent-closing");
       });
     },
-    patchTimeInterval(){
-      this.count++
-      Api.patch('/sessions', {
-        date: this.date
+    patchTimeInterval() {
+      this.count++;
+      Api.patch("/sessions", {
+        date: this.date,
       })
-          .then(response => {
-            if(this.count === 1){
-              this.previousInterval = this.initialInterval;
-              this.newInterval = JSON.stringify(response.data.interval);
-              this.subscribeToSchedule(this.newInterval);
-              this.publishSchedule(this.previousInterval,this.newInterval);
-            }else{
-              this.previousInterval = this.newInterval;
-              this.newInterval = JSON.stringify(response.data.interval);
-              this.subscribeToSchedule(this.newInterval);
-              this.publishSchedule(this.previousInterval,this.newInterval);
-            }
-          })
-          .catch(err => {
-            console.log(err)
-          });
-    }
+        .then((response) => {
+          if (this.count === 1) {
+            this.previousInterval = this.initialInterval;
+            this.newInterval = JSON.stringify(response.data.interval);
+            this.subscribeToSchedule(this.newInterval);
+            this.publishSchedule(this.previousInterval, this.newInterval);
+          } else {
+            this.previousInterval = this.newInterval;
+            this.newInterval = JSON.stringify(response.data.interval);
+            this.subscribeToSchedule(this.newInterval);
+            this.publishSchedule(this.previousInterval, this.newInterval);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
-
 };
 </script>

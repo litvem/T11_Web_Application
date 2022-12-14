@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <ModalCB />
     <div class="welcome-message">
       <h4>
         Welcome to Dentistimo, digital portal where you can easy book your
@@ -8,7 +9,7 @@
     </div>
     <section>
       <div class="map">
-        <Map :dentistsArray="dentists"/>
+        <Map :dentistsArray="dentists" />
       </div>
       <div class="schedule-related">
         <!--SEARCH related items-->
@@ -37,7 +38,12 @@
           >
         </div>
         <div class="filtered-schedule">
-          <schedule :schedule="schedule" :key="schedule" :dentistsArray="dentists" :session="sessionId"/>
+          <schedule
+            :schedule="schedule"
+            :key="schedule"
+            :dentistsArray="dentists"
+            :session="sessionId"
+          />
           <!--SPINNER while waiting filtered response
           <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
@@ -125,38 +131,6 @@
         </template>
       </b-modal>
     </div>
-    <!--MODAL in case of circuit breaker open/closed-->
-    <div v-if="circuit_breaker">
-      <b-modal
-        id="cb"
-        v-model="circuit_breaker"
-        ref="modal"
-        :hide-header="true"
-        :hide-footer="true"
-        centered
-        no-close-on-esc
-        no-close-on-backdrop
-        ><div
-          style="
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding-top: 5%;
-            margin-bottom: 5%;
-          "
-        >
-          <b-icon
-            id="error_sign"
-            icon="exclamation-triangle-fill"
-            variant="danger"
-            animation="fade"
-          ></b-icon>
-        </div>
-        <h5 id="cb_body">Service temporarily unavailable.</h5>
-      </b-modal>
-    </div>
-    <div v-else></div>
-    <!--MODAL to display message when booking is made, but no email sent-->
     <div v-if="no_email_message" :key="no_email_message">
       <b-modal
         id="success_message"
@@ -231,13 +205,15 @@
 import { Api } from "../Api.js";
 import Map from "../components/Map.vue";
 import Schedule from "../components/Schedule.vue";
+import ModalCB from "../components/ModalCB.vue";
 import { ref, onMounted } from "vue";
 import mqttClient from "../mqttClient";
 
 export default {
   components: {
     Map,
-    Schedule
+    Schedule,
+    ModalCB,
   },
   data() {
     return {
@@ -249,7 +225,7 @@ export default {
       topic: "",
       newInterval: "",
       previousInterval: "",
-      count: 0
+      count: 0,
     };
   },
   setup() {
@@ -260,7 +236,6 @@ export default {
     let error_message = ref(false);
     let success_message = ref(false);
     let no_email_message = ref(false);
-    let circuit_breaker = ref(false);
 
     const post = () =>
       new Promise((resolve, reject) => {
@@ -269,8 +244,12 @@ export default {
             console.log(response);
             sessionId.value = response.data.user;
             console.log(sessionId.value);
-            initialInterval.value = JSON.stringify(response.data.interval)
-            mqttClient.publish("schedule/initial/request", initialInterval.value, 1 );
+            initialInterval.value = JSON.stringify(response.data.interval);
+            mqttClient.publish(
+              "schedule/initial/request",
+              initialInterval.value,
+              1
+            );
             resolve();
           })
           .catch((err) => {
@@ -300,8 +279,6 @@ export default {
         qos: 2,
       });
       mqttClient.subscribe(`booking/error/${sessionId.value}`, { qos: 2 });
-      mqttClient.subscribe("circuitbreak/open", { qos: 1 });
-      mqttClient.subscribe("circuitbreak/close", { qos: 1 });
 
       mqttClient.on("message", function (topic, message) {
         switch (topic) {
@@ -328,7 +305,7 @@ export default {
             });
             break;
           case "schedule/initial/response":
-            schedule.value= JSON.parse(message.toString());
+            schedule.value = JSON.parse(message.toString());
             mqttClient.unsubscribe("schedule/initial/response");
             break;
           case `emailconfirmation/${sessionId.value}`:
@@ -343,13 +320,6 @@ export default {
             console.log("error message received");
             error_message.value = true;
             break;
-          case "circuitbreak/open":
-            console.log("circuit breaker open, servises stopped");
-            circuit_breaker.value = true;
-            break;
-          case "circuitbreak/close":
-            console.log("circuit breaker closed, servises resumed");
-            circuit_breaker.value = false;
         }
       });
 
@@ -360,28 +330,35 @@ export default {
     });
 
     const publishSchedule = (oldInterval, latestInterval) => {
-      mqttClient.publish("schedule/request", `{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`,1);
-      console.log(`{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`);
+      mqttClient.publish(
+        "schedule/request",
+        `{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`,
+        1
+      );
+      console.log(
+        `{ "previousInterval" : ${oldInterval}, "newInterval" : ${latestInterval} }`
+      );
     };
 
     const subscribeToSchedule = (interval) => {
-      const fromTo= JSON.parse(interval);
-      mqttClient.subscribe(`schedule/response/${fromTo.from}-${fromTo.to}`, { qos: 1 });
-      mqttClient.on("message", function (topic, message){
+      const fromTo = JSON.parse(interval);
+      mqttClient.subscribe(`schedule/response/${fromTo.from}-${fromTo.to}`, {
+        qos: 1,
+      });
+      mqttClient.on("message", function (topic, message) {
         if (topic === `schedule/response/${fromTo.from}-${fromTo.to}`) {
-          schedule.value= JSON.parse(message.toString());
+          schedule.value = JSON.parse(message.toString());
         }
       });
     };
 
-    window.onbeforeunload = function(){
-      Api.patch('/sessions', {
-        date: new Date().toString()
-      })
-          .then(response => {
-            initialInterval.value = JSON.stringify(response.data.interval);
-          });
-      mqttClient.publish("schedule/remove/client",`${initialInterval.value}`)
+    window.onbeforeunload = function () {
+      Api.patch("/sessions", {
+        date: new Date().toString(),
+      }).then((response) => {
+        initialInterval.value = JSON.stringify(response.data.interval);
+      });
+      mqttClient.publish("schedule/remove/client", `${initialInterval.value}`);
     };
     return {
       dentists,
@@ -393,7 +370,6 @@ export default {
       success_message,
       no_email_message,
       error_message,
-      circuit_breaker,
     };
   },
   methods: {
@@ -425,29 +401,28 @@ export default {
         this.$bvModal.hide("modal-prevent-closing");
       });
     },
-    patchTimeInterval(){
-      this.count++
-      Api.patch('/sessions', {
-        date: this.date
+    patchTimeInterval() {
+      this.count++;
+      Api.patch("/sessions", {
+        date: this.date,
       })
-          .then(response => {
-            if(this.count === 1){
-              this.previousInterval = this.initialInterval;
-              this.newInterval = JSON.stringify(response.data.interval);
-              this.subscribeToSchedule(this.newInterval);
-              this.publishSchedule(this.previousInterval,this.newInterval);
-            }else{
-              this.previousInterval = this.newInterval;
-              this.newInterval = JSON.stringify(response.data.interval);
-              this.subscribeToSchedule(this.newInterval);
-              this.publishSchedule(this.previousInterval,this.newInterval);
-            }
-          })
-          .catch(err => {
-            console.log(err)
-          });
-    }
+        .then((response) => {
+          if (this.count === 1) {
+            this.previousInterval = this.initialInterval;
+            this.newInterval = JSON.stringify(response.data.interval);
+            this.subscribeToSchedule(this.newInterval);
+            this.publishSchedule(this.previousInterval, this.newInterval);
+          } else {
+            this.previousInterval = this.newInterval;
+            this.newInterval = JSON.stringify(response.data.interval);
+            this.subscribeToSchedule(this.newInterval);
+            this.publishSchedule(this.previousInterval, this.newInterval);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
-
 };
 </script>

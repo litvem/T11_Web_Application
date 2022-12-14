@@ -64,7 +64,7 @@
         <b-form-group
             label="Name"
             label-for="name-input"
-            invalid-feedback="Name is required"
+            :invalid-feedback="invalidNameMessage"
             :state="nameState"
         >
           <b-form-input
@@ -77,7 +77,7 @@
         <b-form-group
             label="Email"
             label-for="email-input"
-            invalid-feedback="Email is required"
+            :invalid-feedback="invalidEmailMessage"
             :state="emailState"
         >
           <b-form-input
@@ -104,7 +104,10 @@ export default {
       name: "",
       email: "",
       nameState: null,
-      emailState: null
+      emailState: null,
+      invalidNameMessage: null,
+      invalidEmailMessage: null,
+      reg: /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     }
 
   },
@@ -129,12 +132,17 @@ export default {
       this.email = "";
       this.nameState = null;
       this.emailState = null;
+      this.invalidNameMessage = null;
+      this.invalidEmailMessage = null;
     },
     checkFormValidity() {
-      const valid = this.$refs.form.checkValidity();
-      this.nameState = valid;
-      this.emailState = valid;
-      return valid;
+      this.nameValidation;
+      this.emailValidation;
+      if (this.nameState && this.emailState) {
+        return true;
+      } else {
+        return false;
+      }
     },
     handleSubmit(bvModalEvent) {
       // Exit when the form isn't valid
@@ -142,6 +150,8 @@ export default {
         bvModalEvent.preventDefault();
         return;
       }
+      this.nameValidation;
+      this.emailValidation;
       // Print the concatinated input into console
       //this.message = this.date + "/" + this.name + "/" + this.email;
       //console.log(this.message);
@@ -186,14 +196,29 @@ export default {
     index() {
       return this.dentists.map(d => d.dentistId);
     },
-    invalidName() {
-      if (this.name.length == 0) {
-        return 'Name is required';
+    nameValidation() {
+      if (this.name == null || this.name == '') {
+        this.nameState = false;
+        this.invalidNameMessage = 'Name is required!';
+        return;
+      } else {
+        this.nameState = true;
+        return;
       }
     },
-    invalidEmail() {
-      if (this.email.length == 0) {
-        return 'Email is required'
+    emailValidation() {
+      if (this.email == null || this.email == '') {
+        this.emailState = false;
+        this.invalidEmailMessage = 'Email is required!';
+        return;
+      }
+      else if (!this.reg.test(this.email)) {
+        this.emailState = false;
+        this.invalidEmailMessage = 'Invalid email format! Please enter an email in the format "abc@mail.com"';
+        return;
+      } else {
+        this.emailState = true;
+        return;
       }
     }
   }

@@ -107,6 +107,7 @@ export default {
       emailState: null,
       invalidNameMessage: null,
       invalidEmailMessage: null,
+      // Taken from: https://stackoverflow.com/questions/55310953/vuejs-is-there-an-easy-way-to-validate-email-and-password-on-client-side-based
       reg: /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
     }
 

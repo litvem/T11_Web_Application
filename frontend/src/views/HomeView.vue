@@ -8,7 +8,7 @@
     </div>
     <section>
       <div class="map">
-        <!-- <Map :dentistsArray="dentists" /> -->
+        <Map :dentistsArray="dentists" />
       </div>
       <div class="schedule-related">
         <!--SEARCH related items-->

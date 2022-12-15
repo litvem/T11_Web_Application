@@ -1,5 +1,7 @@
 <template>
   <div class="home">
+    <ModalCB />
+    <ModalSuccess :sessionId="sessionId" />
     <div class="welcome-message">
       <h4>
         Welcome to Dentistimo, digital portal where you can easy book your
@@ -130,41 +132,9 @@
         </template>
       </b-modal>
     </div>
-    <!--MODAL in case of circuit breaker open/closed-->
-    <div v-if="circuit_breaker">
-      <b-modal
-        id="cb"
-        v-model="circuit_breaker"
-        ref="modal"
-        :hide-header="true"
-        :hide-footer="true"
-        centered
-        no-close-on-esc
-        no-close-on-backdrop
-        ><div
-          style="
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding-top: 5%;
-            margin-bottom: 5%;
-          "
-        >
-          <b-icon
-            id="error_sign"
-            icon="exclamation-triangle-fill"
-            variant="danger"
-            animation="fade"
-          ></b-icon>
-        </div>
-        <h5 id="cb_body">Service temporarily unavailable.</h5>
-      </b-modal>
-    </div>
-    <div v-else></div>
-    <!--MODAL to display message when booking is made, but no email sent-->
     <div v-if="no_email_message" :key="no_email_message">
       <b-modal
-        id="success_message"
+        id="warning_message"
         v-model="no_email_message"
         :hide-header="true"
         centered
@@ -179,17 +149,23 @@
         >
           <b-icon
             id="warning_sign"
-            icon="check-circle-fill"
-            variant="success"
+            icon="exclamation-triangle-fill"
+            variant="warning"
           ></b-icon>
         </div>
         <h5 id="success_text">
-          Your booking is confirmed at TIME on DATE at CLINIC. <br />
-          Confirmation has been sent to EMAIL HERE.
+          Your booking is confirmed <br />
+          at <span class="bold">{{ time }}</span> on
+          <span class="bold">{{ bDate }}</span> <br />
+          at
+          <span class="bold">{{ dentistName }}</span
+          >. <br />
+          Unfortunatelly confirmation email could
+          <span class="bold">not</span> be sent.
         </h5>
         <template #modal-footer="{ cancel }">
           <!--Emulate built in modal footer OK button action-->
-          <b-button size="md" variant="outline-success" @click="cancel()">
+          <b-button size="md" variant="outline-warning" @click="cancel()">
             OK
           </b-button>
         </template>
@@ -218,8 +194,14 @@
           ></b-icon>
         </div>
         <h5 id="success_text">
-          Your booking was successful. <br />
-          Confirmation has been sent to you via email.
+          Your booking is confirmed <br />
+          at <span class="bold">{{ time }}</span> on 
+          <span class="bold">{{ bDate }}</span> <br /> 
+          at
+          <span class="bold">{{ dentistName }}</span
+          >. <br />
+          Confirmation has been sent to <span class="bold">{{ email }}</span
+          >.
         </h5>
         <template #modal-footer="{ cancel }">
           <!--Emulate built in modal footer OK button action-->
@@ -236,6 +218,7 @@
 import { Api } from "../Api.js";
 import Map from "../components/Map.vue";
 import Schedule from "../components/Schedule.vue";
+import ModalCB from "../components/ModalCB.vue";
 import { ref, onMounted } from "vue";
 import mqttClient from "../mqttClient";
 
@@ -243,12 +226,12 @@ export default {
   components: {
     Map,
     Schedule,
+    ModalCB,
   },
   data() {
     return {
       date: "",
       name: "",
-      email: "",
       nameState: null,
       emailState: null,
       topic: "",
@@ -265,7 +248,11 @@ export default {
     let error_message = ref(false);
     let success_message = ref(false);
     let no_email_message = ref(false);
-    let circuit_breaker = ref(false);
+    let time = ref(null);
+    let bDate = ref(null);
+    let dentistId = ref(null);
+    let dentistName = ref("");
+    let email = ref(null);
 
     const post = () =>
       new Promise((resolve, reject) => {
@@ -288,6 +275,17 @@ export default {
           });
       });
 
+    const index = () => {
+      console.log(dentists);
+      return dentists.value.map(d => d.dentistId);
+    };
+
+    const getName = (dentist) => {
+      let name = dentists.value[index().indexOf(dentist)].name;
+      console.log(index());
+      return name;
+    };
+
     onMounted(async () => {
       await post();
 
@@ -309,8 +307,6 @@ export default {
         qos: 2,
       });
       mqttClient.subscribe(`booking/error/${sessionId.value}`, { qos: 2 });
-      mqttClient.subscribe("circuitbreak/open", { qos: 1 });
-      mqttClient.subscribe("circuitbreak/close", { qos: 1 });
 
       mqttClient.on("message", function (topic, message) {
         switch (topic) {
@@ -344,22 +340,28 @@ export default {
           case `emailconfirmation/${sessionId.value}`:
             console.log("booking confirmation received");
             success_message.value = true;
+            var booking = JSON.parse(message.toString());
+            console.log(booking);
+            bDate.value = booking.date.slice(0, 10);
+            time.value = booking.time;
+            dentistId.value = booking.dentistId;
+            dentistName.value = getName(dentistId.value);
+            email.value = booking.userid;
             break;
           case `emailconfirmation/error/${sessionId.value}`:
             console.log("booking confirmed, no email sent");
             no_email_message.value = true;
+            var bookingIncomplete = JSON.parse(message.toString());
+            console.log(bookingIncomplete);
+            bDate.value = bookingIncomplete.date;
+            time.value = bookingIncomplete.time;
+            dentistId.value = bookingIncomplete.dentistId;
+            dentistName.value = getName(dentistId.value);
             break;
           case `booking/error/${sessionId.value}`:
             console.log("error message received");
             error_message.value = true;
             break;
-          case "circuitbreak/open":
-            console.log("circuit breaker open, servises stopped");
-            circuit_breaker.value = true;
-            break;
-          case "circuitbreak/close":
-            console.log("circuit breaker closed, servises resumed");
-            circuit_breaker.value = false;
         }
       });
 
@@ -405,7 +407,11 @@ export default {
       success_message,
       no_email_message,
       error_message,
-      circuit_breaker,
+      bDate,
+      time,
+      dentistId,
+      dentistName,
+      email,
     };
   },
   methods: {

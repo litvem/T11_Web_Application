@@ -134,12 +134,22 @@ section .schedule-related .filtered-schedule {
 
 #success_message {
   background-color: #33ff0029;
-  color: rgb(1, 69, 1);
+  color: rgb(1, 104, 1);
 }
 
 #success_text {
-  font-size: 30px;
+  font-size: 27px;
   text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+#warning_message {
+  background-color: #ffea0029;
+  color: rgb(147, 120, 1);
 }
 
 #cb {

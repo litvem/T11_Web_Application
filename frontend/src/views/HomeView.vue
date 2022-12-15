@@ -10,7 +10,7 @@
     </div>
     <section>
       <div class="map">
-        <!--<Map :dentistsArray="dentists" />-->
+        <Map :dentistsArray="dentists" />
       </div>
       <div class="schedule-related">
         <!--SEARCH related items-->
@@ -335,6 +335,7 @@ export default {
           case "schedule/initial/response":
             schedule.value = JSON.parse(message.toString());
             mqttClient.unsubscribe("schedule/initial/response");
+            subscribeToSchedule(initialInterval.value);
             break;
           case `emailconfirmation/${sessionId.value}`:
             console.log("booking confirmation received");
@@ -394,11 +395,6 @@ export default {
     };
 
     window.onbeforeunload = function () {
-      Api.patch("/sessions", {
-        date: new Date().toString(),
-      }).then((response) => {
-        initialInterval.value = JSON.stringify(response.data.interval);
-      });
       mqttClient.publish("schedule/remove/client", `${initialInterval.value}`);
     };
     return {

@@ -134,7 +134,7 @@
     </div>
     <div v-if="no_email_message" :key="no_email_message">
       <b-modal
-        id="success_message"
+        id="warning_message"
         v-model="no_email_message"
         :hide-header="true"
         centered
@@ -149,21 +149,23 @@
         >
           <b-icon
             id="warning_sign"
-            icon="check-circle-fill"
-            variant="success"
+            icon="exclamation-triangle-fill"
+            variant="warning"
           ></b-icon>
         </div>
         <h5 id="success_text">
-          Your booking is confirmed at <span class="bold">{{ time }}</span> on
-          <span class="bold">{{ bDate }}</span> at
+          Your booking is confirmed <br />
+          at <span class="bold">{{ time }}</span> on
+          <span class="bold">{{ bDate }}</span> <br />
+          at
           <span class="bold">{{ dentistName }}</span
           >. <br />
-          Confirmation has been sent to <span class="bold">{{ email }}</span
-          >.
+          Unfortunatelly confirmation email could
+          <span class="bold">not</span> be sent.
         </h5>
         <template #modal-footer="{ cancel }">
           <!--Emulate built in modal footer OK button action-->
-          <b-button size="md" variant="outline-success" @click="cancel()">
+          <b-button size="md" variant="outline-warning" @click="cancel()">
             OK
           </b-button>
         </template>
@@ -192,8 +194,14 @@
           ></b-icon>
         </div>
         <h5 id="success_text">
-          Your booking was successful. <br />
-          Confirmation has been sent to you via email.
+          Your booking is confirmed <br />
+          at <span class="bold">{{ time }}</span> on 
+          <span class="bold">{{ bDate }}</span> <br /> 
+          at
+          <span class="bold">{{ dentistName }}</span
+          >. <br />
+          Confirmation has been sent to <span class="bold">{{ email }}</span
+          >.
         </h5>
         <template #modal-footer="{ cancel }">
           <!--Emulate built in modal footer OK button action-->
@@ -331,17 +339,23 @@ export default {
           case `emailconfirmation/${sessionId.value}`:
             console.log("booking confirmation received");
             success_message.value = true;
+            var booking = JSON.parse(message.toString());
+            console.log(booking);
+            bDate.value = booking.date.slice(0, 10);
+            time.value = booking.time;
+            dentistId.value = booking.dentistId;
+            dentistName.value = getName(dentistId.value);
+            email.value = booking.userid;
             break;
           case `emailconfirmation/error/${sessionId.value}`:
             console.log("booking confirmed, no email sent");
             no_email_message.value = true;
-            var booking = JSON.parse(message.toString());
-            console.log(booking);
-            bDate.value = booking.date;
-            time.value = booking.time;
-            dentistId.value = booking.dentistId;
+            var bookingIncomplete = JSON.parse(message.toString());
+            console.log(bookingIncomplete);
+            bDate.value = bookingIncomplete.date;
+            time.value = bookingIncomplete.time;
+            dentistId.value = bookingIncomplete.dentistId;
             dentistName.value = getName(dentistId.value);
-            email.value = booking.email;
             break;
           case `booking/error/${sessionId.value}`:
             console.log("error message received");
@@ -455,17 +469,6 @@ export default {
           console.log(err);
         });
     },
-    // getName(dentist) {
-    //   let name = this.dentists.value[this.index.indexOf(dentist)].name;
-    //   console.log(this.index);
-    //   return name;
-    // },
   },
-  // computed: {
-  //   index() {
-  //     console.log(this.dentist);
-  //     return this.dentists.value.map(d => d.dentistId);
-  //   },
-  // },
 };
 </script>

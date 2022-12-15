@@ -143,9 +143,13 @@ section .schedule-related .filtered-schedule {
 }
 
 .bold {
-  font-size: 30px;
   font-weight: bold;
   text-decoration: underline;
+}
+
+#warning_message {
+  background-color: #ffea0029;
+  color: rgb(147, 120, 1);
 }
 
 #cb {

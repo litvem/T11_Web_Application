@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <ModalCB />
+    <ModalSuccess :sessionId="sessionId" />
     <div class="welcome-message">
       <h4>
         Welcome to Dentistimo, digital portal where you can easy book your
@@ -9,7 +10,7 @@
     </div>
     <section>
       <div class="map">
-        <Map :dentistsArray="dentists" />
+        <!--<Map :dentistsArray="dentists" />-->
       </div>
       <div class="schedule-related">
         <!--SEARCH related items-->
@@ -153,8 +154,12 @@
           ></b-icon>
         </div>
         <h5 id="success_text">
-          Your booking is confirmed at TIME on DATE at CLINIC. <br />
-          Confirmation has been sent to EMAIL HERE.
+          Your booking is confirmed at <span class="bold">{{ time }}</span> on
+          <span class="bold">{{ bDate }}</span> at
+          <span class="bold">{{ dentistName }}</span
+          >. <br />
+          Confirmation has been sent to <span class="bold">{{ email }}</span
+          >.
         </h5>
         <template #modal-footer="{ cancel }">
           <!--Emulate built in modal footer OK button action-->
@@ -219,7 +224,6 @@ export default {
     return {
       date: "",
       name: "",
-      email: "",
       nameState: null,
       emailState: null,
       topic: "",
@@ -236,6 +240,11 @@ export default {
     let error_message = ref(false);
     let success_message = ref(false);
     let no_email_message = ref(false);
+    let time = ref(null);
+    let bDate = ref(null);
+    let dentistId = ref(null);
+    let dentistName = ref("");
+    let email = ref(null);
 
     const post = () =>
       new Promise((resolve, reject) => {
@@ -257,6 +266,17 @@ export default {
             reject();
           });
       });
+
+    const index = () => {
+      console.log(dentists);
+      return dentists.value.map(d => d.dentistId);
+    };
+
+    const getName = (dentist) => {
+      let name = dentists.value[index().indexOf(dentist)].name;
+      console.log(index());
+      return name;
+    };
 
     onMounted(async () => {
       await post();
@@ -315,6 +335,13 @@ export default {
           case `emailconfirmation/error/${sessionId.value}`:
             console.log("booking confirmed, no email sent");
             no_email_message.value = true;
+            var booking = JSON.parse(message.toString());
+            console.log(booking);
+            bDate.value = booking.date;
+            time.value = booking.time;
+            dentistId.value = booking.dentistId;
+            dentistName.value = getName(dentistId.value);
+            email.value = booking.email;
             break;
           case `booking/error/${sessionId.value}`:
             console.log("error message received");
@@ -370,6 +397,11 @@ export default {
       success_message,
       no_email_message,
       error_message,
+      bDate,
+      time,
+      dentistId,
+      dentistName,
+      email,
     };
   },
   methods: {
@@ -423,6 +455,17 @@ export default {
           console.log(err);
         });
     },
+    // getName(dentist) {
+    //   let name = this.dentists.value[this.index.indexOf(dentist)].name;
+    //   console.log(this.index);
+    //   return name;
+    // },
   },
+  // computed: {
+  //   index() {
+  //     console.log(this.dentist);
+  //     return this.dentists.value.map(d => d.dentistId);
+  //   },
+  // },
 };
 </script>

@@ -1,92 +1,128 @@
-# T11 - Web Application
+# **T11 - Web Application**
 
+## **Descripton**
 
+Web Application is one of the components of the Dentistimo system. Dentistimo allows users to view and book dentist appointments in the city of Gothenburg. More information can be found [here](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-project).
 
-## Getting started
+Web Application represents Graphical User Interface (GUI) for the user to interact with in order to book dental appointments. Web Application communicates to other components in order to achieve following goals:
+- [Database Model Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-database-model-handler) to get information needed to display pins of clinics saved in database on the map of Gothenburg along with their names and opening hours,
+- [Schedule Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-schedule-handler) to display dental appointment slots according to the user's date choice and update schedule dynamically, and
+- [Booking Validator](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-booking-validator) to proceed with the user's booking request, and display notification to the user depending on the booking outcome (success, warning, failure or service unavailable) according to the message recieved from Booking Validator.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## **Responsability**
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### **<ins>Map subcomponent</ins>**
+- Display map of Gothenburg
+- Display pins for dental clinics according to their coordinates
+- Display dental clinic name and opening hours upon clicking on pin
 
-## Add your files
+### **<ins>Search bar subcomponent</ins>**
+- Display date picker for user to be able to select the date for dental appointment
+- Display 'search' button that triggers the update of <ins>Schedule subcomponent</ins>
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### **<ins>Schedule subcomponent</ins>**
+- Display appointment slots for the week according to date that user selected <br/>
+<ins>Color coding for the slots according to availability:</ins><br/>
+        - *grey* - 0 slots available<br/>
+        - *yellow* - only 1 slot available<br/>
+        - *green* - 2 or more slots available.
+- Appointment slots are clickable (for slots with availability of 1 or more) and trigger <ins>Selection of clinic</ins> popup
 
+### **<ins>Dynamic subcomponents</ins>**
+- <ins>*Selection of clinic popup*:</ins> provides the user with available clinics options to be selected from
+- <ins>*User input popup*:</ins> prompts the user to provide name and email address to complete the booking
+- <ins>*Success popup*:</ins> notifies the user that booking was successful (displays data provided during booking process) and confirmation email has been sent
+- <ins>*Warning popup*:</ins> notifies the user that the booking was successful (displays data provided during booking process) and an error occurred upon sending confirmation email
+- <ins>*Error popup*:</ins> notifies the user that an error occurred during booking process and prompts to try using services again later
+- <ins>*Service unavailable popup*:</ins> notifies the user that service is currently unavailable and prevents the user from sending request to already overloaded system
+
+## **Data flow**
+
+### **<ins>Input Data</ins>**
+The **input data** of this component is the dental clinics data received from [Database Model Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-database-model-handler) and booking response data received from [Booking Validator](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-booking-validator).
+
+>Example of Dental clinics data
 ```
-cd existing_repo
-git remote add origin https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-web-application.git
-git branch -M main
-git push -uf origin main
+{
+    "id": 1,
+    "name": "Your Dentist",
+    "dentists": 3,
+    "coordinate": {
+        "longitude": 11.969388,
+        "latitude": 57.707619
+    },
+    "openinghours": {
+        "monday": "9:00-17:00",
+        "tuesday": "8:00-17:00",
+        "wednesday": "7:00-16:00",
+        "thursday": "9:00-17:00",
+        "friday": "9:00-15:00"
+    }
+}
+```
+>Example of Booking response
+```
+{
+  "userid": "example@mail.com",
+  "requestid": 13,
+  "dentistId": 2,
+  "date": "2020-12-14",
+  "time": "9:30-10:00",
+  "name": "John",
+  "sessionid": "5355QPITzxL9-tGW1yOUMITYwIYk4Vdz"
+}
 ```
 
-## Integrate with your tools
+### **<ins>Output Data</ins>**
+The **output data** of this components is the information sent once the user provided necessary information and confirmed the booking.
+>Example of Booking request
+```
+{
+  "userid": "example@gmail.com",
+  "requestid": 13,
+  "dentistid": 2,
+  "issuance": 1602406766314,
+  "date": "2020-12-14",
+  "time": "13.00-13.30",
+  "name": "John",
+  "sessionid": "5355QPITzxL9-tGW1yOUMITYwIYk4Vdz"
+}
+```
 
-- [ ] [Set up project integrations](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-web-application/-/settings/integrations)
+## **Tools**
 
-## Collaborate with your team
+> NPM <br>[ Download here ](https://www.npmjs.com/)
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+> Vue.js <br>[ Download here ](https://vuejs.org/)
 
-## Test and Deploy
+> Vite <br >[ Download here ](https://vitejs.dev/)
 
-Use the built-in continuous integration in GitLab.
+> Bootstrap <br> [ Download here ](https://getbootstrap.com/)
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+> BootstrapVue <br> [ Download here ](https://bootstrap-vue.org/)
 
-***
+> VueGeolocation API <br> [ More information here ](https://developers.google.com/maps/documentation/javascript/cloud-setup)
 
-# Editing this README
+> VueGoogleMaps <br> [ More information here ](https://developers.google.com/maps/documentation/javascript/cloud-setup)
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+> JavaScript IDE<br> Some alternatives: [Visual Studio Code](https://visualstudio.microsoft.com/downloads/) , [WebStorm](https://www.jetbrains.com/webstorm/download/)
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### **<ins>Setup</ins>**
 
-## Name
-Choose a self-explaining name for your project.
+| Description | Command |
+|-------|---|
+| Clone this repository | <ins>Option 1</ins><br> Download as a `zip` file<br> <ins>Option 2</ins><br>`git clone git@git.chalmers.se:courses/dit355/dit356-2022/t-11/t11-web-application.git`|
+| Open terminal and navigate to mosquitto root folder |  `mosquitto -c mosquitto.conf -v ` |
+|Open the repo in JavaScript IDE and open the terminal in the IDE. Navigate to the **backend** folder | `npm install` |
+|After installation is completed, navigate back to the **root** folder and then to the **frontend** folder | `npm install` |
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.

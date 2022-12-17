@@ -460,6 +460,7 @@ export default {
             this.subscribeToSchedule(this.newInterval);
             this.publishSchedule(this.previousInterval, this.newInterval);
           }
+          this.initialInterval= this.newInterval;
         })
         .catch((err) => {
           console.log(err);

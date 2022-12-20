@@ -14,25 +14,21 @@
           <p>{{ time }}</p>
         </div>
       </div>
-      <div v-for="day in week.length - 2" :class="week[day - 1].day" class="schedule">
-        <!--div class="timeslot" v-for="time in timestamps.length - 1" :class="`amount-${getTimeSlot(
-          day - 1,
-          timestamps[time - 1],
-          timestamps[time]
-        )}`">
-          <p class="slot">
-            Available slots:
-            {{ getTimeSlot(day - 1, timestamps[time - 1], timestamps[time]) }}
-          </p>
-        </div-->
-        <timeslot v-for="time in timestamps.length - 1" :dentists="dentistsArray" :sessionId="session"  :data="getTimeSlot(
-          day - 1,
-          timestamps[time - 1],
-          timestamps[time]
-        )" :day="week[day - 1].day" :date="week[day - 1].date" :timeslot="getTimeSlotKey(
-          timestamps[time - 1],
-          timestamps[time]
-        )" />
+      <div
+        v-for="day in week.length - 2"
+        :class="week[day - 1].day"
+        class="schedule"
+      >
+        <timeslot
+          v-for="time in timestamps.length - 1"
+          :dentists="dentistsArray"
+          :sessionId="session"
+          :data="getTimeSlot(day - 1, timestamps[time - 1], timestamps[time])"
+          :day="week[day - 1].day"
+          :date="week[day - 1].date"
+          :timeslot="getTimeSlotKey(timestamps[time - 1], timestamps[time])"
+          :today="today"
+        />
       </div>
     </div>
   </div>
@@ -44,7 +40,7 @@ import Timeslot from "@/components/Timeslot.vue";
 export default {
   name: "schedule",
   components: { Timeslot },
-  props: ["schedule","dentistsArray","session"],
+  props: ["schedule", "dentistsArray", "session"],
   data() {
     return {
       week: [
@@ -57,14 +53,19 @@ export default {
         { day: "Sun" },
       ],
       timestamps: [],
+      today: new Date(),
     };
   },
   created() {
-    let am_pm = 'AM'
+    let am_pm = "AM";
     for (let i = 6; i <= 19; i++) {
       let j = i;
-      if (i >= 12) { am_pm = 'PM' }
-      if (i > 12) { j = i - 12 }
+      if (i >= 12) {
+        am_pm = "PM";
+      }
+      if (i > 12) {
+        j = i - 12;
+      }
       this.timestamps.push(j + `:00 ${am_pm}`);
       this.timestamps.push(j + `:30 ${am_pm}`);
     }
@@ -108,8 +109,9 @@ export default {
         fromHour === 12 || from.endsWith("AM") ? fromHour : fromHour + 12;
       toHour = toHour === 12 || to.endsWith("AM") ? toHour : toHour + 12;
 
-      return `${fromHour + from.substring(from.indexOf(":"), from.length - 3)
-        }-${toHour + to.substring(to.indexOf(":"), to.length - 3)}`;
+      return `${
+        fromHour + from.substring(from.indexOf(":"), from.length - 3)
+      }-${toHour + to.substring(to.indexOf(":"), to.length - 3)}`;
     },
     /**
      * Retrieves the number of available slots for a certain timeslot
@@ -120,8 +122,8 @@ export default {
      */
     getTimeSlot(day, fromTimeStamp, toTimeStamp) {
       return this.week[day].schedule[
-            this.getTimeSlotKey(fromTimeStamp, toTimeStamp)
-          ]; // ? slot.map((s) => s["slots"]).reduce((acc, s) => acc + s) : 0;
+        this.getTimeSlotKey(fromTimeStamp, toTimeStamp)
+      ]; // ? slot.map((s) => s["slots"]).reduce((acc, s) => acc + s) : 0;
     },
   },
 };

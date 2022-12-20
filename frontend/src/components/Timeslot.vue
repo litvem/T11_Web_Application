@@ -1,21 +1,23 @@
 <template>
   <div>
-    <div v-b-modal="`timeslot-modal-${day}-${timeslot}`" class="timeslot" :class="`amount-${available}`">
-      <p class="slot">
-        Available slots: {{ available }}
-      </p>
+    <div
+      v-b-modal="`timeslot-modal-${day}-${timeslot}`"
+      class="timeslot"
+      :class="`amount-${available}`"
+    >
+      <p class="slot">Available slots: {{ available }}</p>
     </div>
     <!-- Modal displaying dentists' slots -->
     <b-modal
-        :id="`timeslot-modal-${day}-${timeslot}`"
-        v-if="bookable"
-        :hide-footer="true"
+      :id="`timeslot-modal-${day}-${timeslot}`"
+      v-if="bookable"
+      :hide-footer="true"
     >
       <template #modal-header>
         <div style="width: 100%; display: flex; justify-content: center">
           <h4>
             {{ day }} {{ timeslot }}
-            <br>
+            <br />
             Choose a dentist
           </h4>
         </div>
@@ -23,11 +25,11 @@
       <div id="modal-wrapper">
         <div id="dentists">
           <div
-              v-b-modal="`booking-modal-${day}-${timeslot}`"
-              class="dentist-data"
-              v-for="dentist in data"
-              v-if="dentist.slots > 0 && bookable"
-              @click="onClick(dentist.dentist)"
+            v-b-modal="`booking-modal-${day}-${timeslot}`"
+            class="dentist-data"
+            v-for="dentist in data"
+            v-if="dentist.slots > 0 && bookable"
+            @click="onClick(dentist.dentist)"
           >
             <p>{{ getName(dentist.dentist) }}</p>
             <p>Available slots: {{ dentist.slots }}</p>
@@ -45,46 +47,43 @@
         <div style="width: 100%; display: flex; justify-content: center">
           <h4>
             {{ day }} {{ timeslot }}
-            <br>
+            <br />
             Input your data
           </h4>
         </div>
       </template>
       <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group
-            label="Dentist"
-            label-for="dentist"
-        >
+        <b-form-group label="Dentist" label-for="dentist">
           <b-form-input
-              id="dentist"
-              v-model="dentistName"
-              disabled
+            id="dentist"
+            v-model="dentistName"
+            disabled
           ></b-form-input>
         </b-form-group>
         <b-form-group
-            label="Name"
-            label-for="name-input"
-            :invalid-feedback="invalidNameMessage"
+          label="Name"
+          label-for="name-input"
+          :invalid-feedback="invalidNameMessage"
+          :state="nameState"
+        >
+          <b-form-input
+            id="name-input"
+            v-model="name"
             :state="nameState"
-        >
-          <b-form-input
-              id="name-input"
-              v-model="name"
-              :state="nameState"
-              required
+            required
           ></b-form-input>
         </b-form-group>
         <b-form-group
-            label="Email"
-            label-for="email-input"
-            :invalid-feedback="invalidEmailMessage"
-            :state="emailState"
+          label="Email"
+          label-for="email-input"
+          :invalid-feedback="invalidEmailMessage"
+          :state="emailState"
         >
           <b-form-input
-              id="email-input"
-              v-model="email"
-              :state="emailState"
-              required
+            id="email-input"
+            v-model="email"
+            :state="emailState"
+            required
           ></b-form-input>
         </b-form-group>
       </form>
@@ -96,7 +95,7 @@
 import mqttClient from "../mqttClient";
 export default {
   name: "timeslot",
-  props: ["data", "day", "date", "timeslot", "dentists", "sessionId"],
+  props: ["data", "day", "date", "timeslot", "dentists", "sessionId", "today"],
   data() {
     return {
       dentistID: null,
@@ -108,14 +107,13 @@ export default {
       invalidNameMessage: null,
       invalidEmailMessage: null,
       // Taken from: https://stackoverflow.com/questions/55310953/vuejs-is-there-an-easy-way-to-validate-email-and-password-on-client-side-based
-      reg: /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/
-    }
-
+      reg: /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
+    };
   },
   methods: {
     onClick(dentist) {
       this.dentistID = dentist;
-      this.dentistName = this.getName(dentist)
+      this.dentistName = this.getName(dentist);
       this.$bvModal.hide(`timeslot-modal-${this.day}-${this.timeslot}`);
     },
     getName(dentist) {
@@ -124,7 +122,7 @@ export default {
     },
     cancelInfo() {
       this.resetInfoModal();
-      this.$bvModal.show(`timeslot-modal-${this.day}-${this.timeslot}`)
+      this.$bvModal.show(`timeslot-modal-${this.day}-${this.timeslot}`);
     },
     resetInfoModal() {
       this.dentistID = null;
@@ -169,8 +167,7 @@ export default {
         date: this.date,
       };
 
-      mqttClient.publish("booking/request", JSON.stringify(message))
-
+      mqttClient.publish("booking/request", JSON.stringify(message));
 
       // Hide the modal manually
       this.$nextTick(() => {
@@ -182,10 +179,23 @@ export default {
   computed: {
     /**
      * Returns the number of available slots for the timeslot
-     * @returns {number} the reduced number of the data array
+     * @returns {number} the reduced number of the data array.
+     * If the day is today or a past day, returns 0
      */
     available() {
-      return this.data ? this.data.map((s) => s["slots"]).reduce((acc, s) => acc + s) : 0;
+      let currentYear = this.today.getFullYear();
+      let currentMonth = this.today.getMonth();
+      let currentDate = this.today.getDate();
+
+      let date = new Date(this.date);
+
+      if (date.getFullYear() < currentYear) return 0;
+      if (date.getMonth() < currentMonth) return 0;
+      if (date.getDate() <= currentDate) return 0;
+
+      return this.data
+        ? this.data.map((s) => s["slots"]).reduce((acc, s) => acc + s)
+        : 0;
     },
     /**
      * Checks whether the timeslot is bookable or not
@@ -195,12 +205,12 @@ export default {
       return this.available > 0;
     },
     index() {
-      return this.dentists.map(d => d.dentistId);
+      return this.dentists.map((d) => d.dentistId);
     },
     nameValidation() {
-      if (this.name == null || this.name == '') {
+      if (this.name == null || this.name == "") {
         this.nameState = false;
-        this.invalidNameMessage = 'Name is required!';
+        this.invalidNameMessage = "Name is required!";
         return;
       } else {
         this.nameState = true;
@@ -208,22 +218,22 @@ export default {
       }
     },
     emailValidation() {
-      if (this.email == null || this.email == '') {
+      if (this.email == null || this.email == "") {
         this.emailState = false;
-        this.invalidEmailMessage = 'Email is required!';
+        this.invalidEmailMessage = "Email is required!";
         return;
-      }
-      else if (!this.reg.test(this.email)) {
+      } else if (!this.reg.test(this.email)) {
         this.emailState = false;
-        this.invalidEmailMessage = 'Invalid email format! Please enter an email in the format "abc@mail.com"';
+        this.invalidEmailMessage =
+          'Invalid email format! Please enter an email in the format "abc@mail.com"';
         return;
       } else {
         this.emailState = true;
         return;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>

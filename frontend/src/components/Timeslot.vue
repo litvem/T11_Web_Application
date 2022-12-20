@@ -239,7 +239,7 @@ p {
 .timeslot {
   margin: 0 0 5px;
   height: var(--slot-height);
-  background-color: rgba(0, 250, 154, 0.53);
+  background-color: rgba(0, 250, 154, 0.2);
   display: flex;
   align-content: center;
   transition: all 0.3s ease;
@@ -271,18 +271,32 @@ p {
 .dentist-data {
   margin: 0 0 5px;
   height: var(--slot-height);
-  background-color: rgba(151, 201, 255, 0.8);
+  background-color: rgba(151, 201, 255, 0.2);
   transition: all 0.3s ease;
 }
 
 .timeslot:hover,
 .dentist-data:hover {
   cursor: pointer;
-  transform: scale(1.05, 1.05);
+  transform: scale(1.05, 1.05) rotate(-3deg);
   transition: all 0.3s ease;
 }
 
+.timeslot:hover {
+  background-color: rgb(0, 250, 154);
+}
+
+.dentist-data:hover {
+  background-color: rgb(151, 201, 255);
+}
+
+.amount-1:hover {
+  background-color: rgb(231, 216, 91);
+}
+
 .amount-0:hover {
+  background-color: #c20000;
+  color: white;
   cursor: not-allowed;
   transform: none;
 }
@@ -297,4 +311,3 @@ p {
   transform: none;
 }
 </style>
-

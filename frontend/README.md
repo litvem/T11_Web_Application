@@ -52,9 +52,9 @@ Relationships of Frontend components can be found in the component diagram below
 
 > BootstrapVue <br> [Installation guide here](https://bootstrap-vue.org/)
 
-> VueGeolocation API <br> [Installation guide here](https://developers.google.com/maps/documentation/javascript/cloud-setup)
+> GmapVue <br> [Installation guide here](https://diegoazh.github.io/gmap-vue/#v2-0-0)
 
-> VueGoogleMaps <br> [Installation guide here](https://developers.google.com/maps/documentation/javascript/cloud-setup)
+> VueGeoLocation <br> [Installation guide here](https://console.cloud.google.com/welcome?project=clinics-368621&authuser=0&organizationId=1043303994003)
 
 > Axios <br> [Installation guide here](https://axios-http.com/)
 

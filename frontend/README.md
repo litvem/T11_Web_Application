@@ -85,15 +85,9 @@ mosquitto -c mosquitto.conf -v
 
 ### After cloning the repo, open the terminal in your local machine, then:
 
-- cd to the **frontend** folder
-- install dependencies with:
-
-```
-npm install
-```
-
-- run the application:
-
-```
-npm run dev
-```
+|                   Description               |          Command         |
+|---------------------------------------------|--------------------------|
+| Change directory to the **frontend** folder | `cd frontend`            |
+| Install dependencies                        | `npm install`            |
+| Run **fronend**                             | `npm run dev`            |
+| Visit generated link                        | `http://localhost:5173/` |

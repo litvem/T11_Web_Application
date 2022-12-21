@@ -10,16 +10,21 @@
     <!-- Modal displaying dentists' slots -->
     <b-modal
       :id="`timeslot-modal-${day}-${timeslot}`"
+      centered
       v-if="bookable"
       :hide-footer="true"
     >
       <template #modal-header>
-        <div style="width: 100%; display: flex; justify-content: center">
-          <h4>
-            {{ day }} {{ timeslot }}
-            <br />
-            Choose a dentist
-          </h4>
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+          "
+        >
+          <h3 style="text-align: center">{{ day }} {{ timeslot }}</h3>
+          <p style="font-size: 20px; align-self: center">Choose a dentist</p>
         </div>
       </template>
       <div id="modal-wrapper">
@@ -40,16 +45,23 @@
     <!-- Modal for user input -->
     <b-modal
       :id="`booking-modal-${day}-${timeslot}`"
+      centered
       @cancel="cancelInfo"
       @ok="handleSubmit"
     >
       <template #modal-header>
-        <div style="width: 100%; display: flex; justify-content: center">
-          <h4>
-            {{ day }} {{ timeslot }}
-            <br />
-            Input your data
-          </h4>
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+          "
+        >
+          <h3 style="text-align: center">{{ day }} {{ timeslot }}</h3>
+          <p style="font-size: 20px; align-self: center">
+            Enter contact information
+          </p>
         </div>
       </template>
       <form ref="form" @submit.stop.prevent="handleSubmit">
@@ -249,6 +261,7 @@ p {
 .timeslot {
   margin: 0 0 5px;
   height: var(--slot-height);
+  border-radius: 7px;
   background-color: rgba(0, 250, 154, 0.2);
   display: flex;
   align-content: center;
@@ -281,6 +294,7 @@ p {
 .dentist-data {
   margin: 0 0 5px;
   height: var(--slot-height);
+  border-radius: 7px;
   background-color: rgba(151, 201, 255, 0.2);
   transition: all 0.3s ease;
 }

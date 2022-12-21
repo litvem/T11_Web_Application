@@ -1,20 +1,30 @@
-# **T11 - Web Application**
+# T11 - Web Application
 
-## **Descripton**
+## Description
 
 **Web Application** is one of the components of the Dentistimo system. Dentistimo allows users to view and book dentist appointments in the city of Gothenburg. More information can be found [here](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-project).
 
 Web Application represents Graphical User Interface (GUI) for the user to interact with in order to book dental appointments. Web Application communicates to other components in order to achieve following goals:
+
 - [Database Model Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-database-model-handler) to get information needed to display pins of clinics saved in database on the map of Gothenburg along with their names and opening hours,
 - [Schedule Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-schedule-handler) to display dental appointment slots according to the user's date choice and update schedule dynamically, and
-- [Booking Validator](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-booking-validator) to proceed with the user's booking request, and display notification to the user depending on the booking outcome (success, warning, failure or service unavailable) according to the message recieved from Booking Validator.
+- [Booking Validator](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-booking-validator) to proceed with the user's booking request, and display notification to the user depending on the booking outcome (success, warning, failure or service unavailable) according to the message received from Booking Validator.
+
+### Subcomponents
+
+This component consists of two subcomponent, each with its own README.
+
+- [Frontend](./frontend/README.md)
+- [Backend](./backend/README.md)
 
 ## **Data flow**
 
 ### **<ins>Input Data</ins>**
+
 The **input data** of this component is the dental clinics data received from [Database Model Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-database-model-handler) and booking response data received from [Booking Validator](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-booking-validator).
 
 >Example of Dental clinics data
+
 ```
 {
     "id": 1,
@@ -33,7 +43,9 @@ The **input data** of this component is the dental clinics data received from [D
     }
 }
 ```
+
 >Example of Booking response
+
 ```
 {
   "userid": "example@mail.com",
@@ -41,13 +53,16 @@ The **input data** of this component is the dental clinics data received from [D
   "date": "2020-12-14",
   "time": "9:30-10:00",
   "name": "John",
-  "sessionid": "5355QPITzxL9-tGW1yOUMITYwIYk4Vdz"
+  "sessionId": "5355QPITzxL9-tGW1yOUMITYwIYk4Vdz"
 }
 ```
 
 ### **<ins>Output Data</ins>**
-The **output data** of this components is the information sent once the user provided necessary information and confirmed the booking.
+
+The **output data** of this component is the information sent once the user provided necessary information and confirmed the booking.
+
 >Example of Booking request
+
 ```
 {
   "userid": "example@gmail.com",
@@ -66,17 +81,17 @@ The **output data** of this components is the information sent once the user pro
 
 > [Backend Tools](./backend/README.md#development-tools)
 
-> JavaScript IDE<br> Some alternatives: [Visual Studio Code](https://visualstudio.microsoft.com/downloads/), [WebStorm](https://www.jetbrains.com/webstorm/download/)
+> JavaScript IDE <br> Some alternatives: [Visual Studio Code](https://visualstudio.microsoft.com/downloads/), [WebStorm](https://www.jetbrains.com/webstorm/download/)
 
 ### **<ins>Setup</ins>**
 
-| Description | Command |
-|-------|---|
-| Clone this repository | <ins>Option 1</ins><br> Download as a `zip` file<br> <ins>Option 2</ins><br>`git clone git@git.chalmers.se:courses/dit355/dit356-2022/t-11/t11-web-application.git`|
-| Open terminal and navigate to mosquitto root folder |  `mosquitto -c mosquitto.conf -v ` |
-|Open the repo in JavaScript IDE 
-|Follow [Getting started with Backend](./backend/README.md#getting-started-with-backend) steps |
-|Follow [Getting started with Frontend](./frontend/README.md#getting-started-with-frontend) steps |
+| Description                                                                                      | Command                                                                                                                                                             |
+|--------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Clone this repository                                                                            | <ins>Option 1</ins><br> Download as a `zip` file<br> <ins>Option 2</ins><br>`git clone git@git.chalmers.se:courses/dit355/dit356-2022/t-11/t11-web-application.git` |
+| Open terminal and navigate to mosquitto root folder                                              | `mosquitto -c mosquitto.conf -v `                                                                                                                                   |
+| Open the repo in JavaScript IDE                                                                  |                                                                                                                                                                     |
+| Follow [Getting started with Backend](./backend/README.md#getting-started-with-backend) steps    |                                                                                                                                                                     |
+| Follow [Getting started with Frontend](./frontend/README.md#getting-started-with-frontend) steps |                                                                                                                                                                     |
 
 
 

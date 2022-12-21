@@ -190,8 +190,17 @@ export default {
       let date = new Date(this.date);
 
       if (date.getFullYear() < currentYear) return 0;
-      if (date.getMonth() < currentMonth) return 0;
-      if (date.getDate() <= currentDate) return 0;
+      else if (
+        date.getMonth() < currentMonth &&
+        date.getFullYear() <= currentYear
+      )
+        return 0;
+      else if (
+        date.getDate() <= currentDate &&
+        date.getMonth() <= currentMonth &&
+        date.getFullYear() <= currentYear
+      )
+        return 0;
 
       return this.data
         ? this.data.map((s) => s["slots"]).reduce((acc, s) => acc + s)

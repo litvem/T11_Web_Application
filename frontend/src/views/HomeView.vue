@@ -3,10 +3,10 @@
     <ModalCB />
     <ModalSuccess :sessionId="sessionId" />
     <div class="welcome-message">
-      <h4>
-        Welcome to Dentistimo, digital portal where you can easy book your
+      <h1>
+        Welcome to Dentistimo, a digital portal where you can easily book your
         dental appointment.
-      </h4>
+      </h1>
     </div>
     <section>
       <div class="map">
@@ -45,8 +45,6 @@
             :dentistsArray="dentists"
             :session="sessionId"
           />
-          <!--SPINNER while waiting filtered response
-          <b-spinner id="spinner" variant="primary"></b-spinner>-->
         </div>
       </div>
     </section>
@@ -121,7 +119,7 @@
           ></b-icon>
         </div>
         <h5 id="error_body">
-          Error occured during your booking. <br />
+          Error occurred during your booking. <br />
           Please try again later.
         </h5>
         <template #modal-footer="{ cancel }">
@@ -160,7 +158,7 @@
           at
           <span class="bold">{{ dentistName }}</span
           >. <br />
-          Unfortunatelly confirmation email could
+          Unfortunately confirmation email could
           <span class="bold">not</span> be sent.
         </h5>
         <template #modal-footer="{ cancel }">
@@ -195,11 +193,11 @@
         </div>
         <h5 id="success_text">
           Your booking is confirmed <br />
-          at <span class="bold">{{ time }}</span> on 
-          <span class="bold">{{ bDate }}</span> <br /> 
+          at <span class="bold">{{ time }}</span> on
+          <span class="bold">{{ bDate }}</span> <br />
           at
           <span class="bold">{{ dentistName }}</span
-          >. <br />
+          >.<br />
           Confirmation has been sent to <span class="bold">{{ email }}</span
           >.
         </h5>
@@ -469,3 +467,135 @@ export default {
   },
 };
 </script>
+
+<style>
+.home {
+  background-image: url("../assets/background.jpg");
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  width: 100%;
+  margin: 0;
+  height: calc(100vh - 61px);
+  position: absolute;
+}
+
+.welcome-message {
+  position: relative;
+  width: 94%;
+  display: flex;
+  justify-content: center;
+  margin: 1% 3%;
+}
+
+h1 {
+  text-align: center;
+}
+
+section {
+  position: relative;
+  width: 94%;
+  height: 80%;
+  display: flex;
+  margin-top: 20px;
+  margin-left: 3%;
+  margin-right: 3%;
+}
+
+.map {
+  width: 40%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(0, 81, 173, 0.959);
+}
+
+.schedule-related {
+  background-color: rgba(151, 201, 255, 0.2);
+  backdrop-filter: blur(2px);
+  width: 60%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-related .search {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  align-items: baseline;
+  padding-left: 1%;
+  padding-top: 0.5%;
+}
+
+label {
+  margin-left: 2%;
+  margin-right: 2%;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+#datepicker {
+  min-width: 50px;
+}
+
+#search-button {
+  margin: 2%;
+}
+
+section .schedule-related .filtered-schedule {
+  width: 100%;
+  height: 90%;
+  display: flex;
+  justify-content: center;
+}
+
+#modal-prevent-closing {
+  background-color: #032f5c29;
+}
+
+#error_message {
+  background: radial-gradient(rgba(200, 0, 0, 0.3), transparent);
+}
+
+#success_message {
+  background: radial-gradient(rgba(0, 200, 0, 0.3), transparent);
+  color: rgb(1, 104, 1);
+}
+
+#success_text {
+  font-size: 27px;
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+#warning_message {
+  background: radial-gradient(rgba(200, 150, 0, 0.3), transparent);
+  color: rgb(147, 120, 1);
+}
+
+#error_body {
+  font-size: 30px;
+  text-align: center;
+  padding-bottom: 5%;
+  color: rgb(255, 4, 4);
+}
+
+#warning_sign {
+  margin: 0 auto;
+  width: 20%;
+  height: 20%;
+  align-self: center;
+}
+
+.modal-header .close {
+  display: none;
+}
+</style>

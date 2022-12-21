@@ -1,7 +1,7 @@
 # T11 - Web Application Frontend
 
 ## Responsibilities
-The **Frontend** communicates to the [Backend](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-web-application/-/blob/main/backend/README.md) and uses session ID for publishing and subscribing to messages, and renders elements according to incoming messages.
+The **Frontend** communicates to the [Backend](../backend/README.md) and uses session ID for publishing and subscribing to messages, and renders elements according to incoming messages.
 
 ### Components responsibilities
 
@@ -42,7 +42,7 @@ Relationships of Frontend components can be found in the component diagram below
 ![Component diagram](./assets/README_component_diagram.png)
 
 ## Development Tools
-> NPM <br> [Download here](https://www.npmjs.com/)
+> Node.js <br> [Download here](https://nodejs.org/en/)
 
 > Vue.js <br> [Installation guide here](https://vuejs.org/)
 

@@ -1,6 +1,7 @@
 # T11 - Web Application Frontend
 
 ## Responsibilities
+
 The **Frontend** communicates to the [Backend](../backend/README.md) and uses session ID for publishing and subscribing to messages, and renders elements according to incoming messages.
 
 ### Components responsibilities
@@ -62,10 +63,11 @@ Relationships of Frontend components can be found in the component diagram below
 
 ## Getting started with Frontend
 
-> ! Your broker must support websockets so that the browser can connect to it
+> ❗ Your broker must support websockets so that the browser can connect to it
 
-> ! If you are using <ins>Mosquitto</ins>, be aware that it does <ins>not</ins> support websockets by default 
-- To use websocket with mosquitto mosquitto.conf file
+> ❗ If you are using <ins>Mosquitto</ins>, be aware that it does <ins>not</ins> support websockets by default 
+
+- To use websocket with the mosquitto.conf file, add the following:
 
 ```
 listener 1883
@@ -74,18 +76,24 @@ listener 9001
 protocol websockets
 allow_anonymous true
 ```
+
 - To run mosquitto with these configurations use: 
+
 ```
 mosquitto -c mosquitto.conf -v
 ```
 
-### After clonning the repo, open the terminal in your local machine, then:
+### After cloning the repo, open the terminal in your local machine, then:
+
 - cd to the **frontend** folder
-- install dependencies with: 
+- install dependencies with:
+
 ```
 npm install
 ```
+
 - run the application:
+
 ```
 npm run dev
 ```

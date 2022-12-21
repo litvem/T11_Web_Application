@@ -28,6 +28,7 @@ Used to create new session or get an existing one.
 Used to patch the date interval used to filter booking slots.
 
 ## Development Tools
+
 > Node.js <br> [Download here](https://nodejs.org/en/)
 
 > Express.js <br> [Download here](https://expressjs.com/)
@@ -36,16 +37,22 @@ Used to patch the date interval used to filter booking slots.
 ## Getting started with Backend
 
 ### After cloning the repo and open the terminal in your local machine:
+
 - cd to the **backend** folder
 - install dependencies with:
+
 ```
 npm install
 ```
+
 - add a **.env** file  containing the following key:
+
 ```dotenv
 SESSION_SECRET="<insert your key>"
 ```
+
 - run the application:
+
 ```
 npm run dev
 ```

@@ -83,7 +83,7 @@ allow_anonymous true
 mosquitto -c mosquitto.conf -v
 ```
 
-### After cloning the repo, open the terminal in your local machine, then:
+### After cloning the repo, open the terminal in your local machine and do the following:
 
 |                   Description               |          Command         |
 |---------------------------------------------|--------------------------|

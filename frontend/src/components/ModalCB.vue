@@ -64,3 +64,26 @@ export default {
   },
 };
 </script>
+
+<style>
+#cb {
+  background: radial-gradient(rgba(200, 0, 0, 0.3), transparent);
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+#cb_body {
+  color: rgb(255, 4, 4);
+  font-size: 30px;
+  text-align: center;
+  padding-bottom: 15%;
+}
+
+#error_sign {
+  margin: 0 auto;
+  width: 20%;
+  height: 20%;
+  align-self: center;
+}
+</style>

@@ -131,6 +131,7 @@ export default {
 
 <style scoped>
 .wrapper {
+  --scrollbar-width: 5px;
   --time-width: 110px;
   --slot-height: 60px;
   width: 100%;
@@ -140,15 +141,11 @@ export default {
   flex-direction: column;
 }
 
-.wrapper::-webkit-scrollbar {
-  display: none;
-}
-
 .titles {
   display: flex;
   align-content: center;
   justify-content: space-between;
-  padding-right: 2%;
+  padding-right: calc(2% + var(--scrollbar-width));
 }
 
 p {
@@ -176,7 +173,20 @@ p {
 }
 
 .timeline::-webkit-scrollbar {
-  display: none;
+  width: var(--scrollbar-width);
+}
+
+.timeline::-webkit-scrollbar-thumb {
+  background-color: rgba(33, 33, 33, 0.2);
+  border-radius: calc(var(--scrollbar-width) / 2);
+}
+
+.timeline::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(33, 33, 33, 0.4);
+}
+
+.timeline::-webkit-scrollbar-thumb:active {
+  background-color: rgba(33, 33, 33, 0.6);
 }
 
 .timestamp {
@@ -192,34 +202,5 @@ p {
   margin: 0;
   padding-top: calc(var(--slot-height) / 2);
   width: var(--day-width);
-}
-
-.timeslot {
-  margin: 0 0 5px;
-  height: var(--slot-height);
-  background-color: rgba(0, 250, 154, 0.53);
-  display: flex;
-  align-content: center;
-  transition: all 0.3s ease;
-}
-
-.amount-0 {
-  color: #606060;
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-.amount-1 {
-  background-color: rgba(231, 216, 91, 0.2);
-}
-
-.timeslot:hover {
-  cursor: pointer;
-  transform: scale(1.05, 1.05);
-  transition: all 0.3s ease;
-}
-
-.amount-0:hover {
-  cursor: not-allowed;
-  transform: none;
 }
 </style>

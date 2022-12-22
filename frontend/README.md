@@ -2,7 +2,7 @@
 
 ## Responsibilities
 
-The **Frontend** communicates to the [Backend](../backend/README.md) and uses session ID for publishing and subscribing to messages, and renders elements according to incoming messages.
+The **Frontend** communicates with the [Backend](../backend/README.md) and uses session ID for publishing and subscribing to messages, and renders elements according to incoming messages.
 
 ### Components responsibilities
 
@@ -13,21 +13,21 @@ The **Frontend** communicates to the [Backend](../backend/README.md) and uses se
 <ins>Map component</ins>
 - Displays map of Gothenburg
 - Displays pins for dental clinics according to their coordinates
-- Displays dental clinic name and opening hours upon clicking on pin
+- Displays dental clinic name and opening hours upon clicking on a pin
 
 <ins>Search Bar component</ins>
-- Displays date picker for user to be able to select the date for dental appointment
+- Displays date picker for a user to be able to select the date for dental appointment
 - Displays 'search' button that triggers the update of <ins>Schedule</ins> component
 
 <ins>Schedule component</ins>
-- Displays appointment slots for the week according to date that the user selected <br/>
+- Displays appointment slots for the week according to the date that the user selected <br/>
 <ins>Color coding for the slots according to availability:</ins><br/>
         - *grey* - 0 slots available<br/>
         - *yellow* - only 1 slot available<br/>
         - *green* - 2 or more slots available.
 
 <ins>Timeslot component</ins>
-- Displays amount of available slots for particular day and time interval
+- Displays the amount of available slots for particular day and time interval
 - Timeslots are clickable (for slots with availability of 1 or more) and trigger <ins>Select Clinic</ins> modal
 
 <ins>Dynamic components</ins>
@@ -89,5 +89,5 @@ mosquitto -c mosquitto.conf -v
 |---------------------------------------------|--------------------------|
 | Change directory to the **frontend** folder | `cd frontend`            |
 | Install dependencies                        | `npm install`            |
-| Run **fronend**                             | `npm run dev`            |
+| Run **frontend**                             | `npm run dev`            |
 | Visit generated link                        | `http://localhost:5173/` |

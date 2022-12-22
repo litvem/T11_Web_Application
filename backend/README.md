@@ -10,7 +10,7 @@ for the [Frontend](../frontend/README.md).
 The Backend has the following responsibilities:
 
 - create a **session ID** and date interval upon loading the web page,
-- maintain the same **session ID** throughout booking process and on page reload for each client,
+- maintain the same **session ID** throughout the booking process and on page reload for each client,
 - store the selected date interval in each session, and
 - allow clients to update their date interval.
 

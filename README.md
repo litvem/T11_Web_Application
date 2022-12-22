@@ -4,15 +4,15 @@
 
 **Web Application** is one of the components of the Dentistimo system. Dentistimo allows users to view and book dentist appointments in the city of Gothenburg. More information can be found [here](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-project).
 
-Web Application represents Graphical User Interface (GUI) for the user to interact with in order to book dental appointments. Web Application communicates to other components in order to achieve following goals:
+Web Application represents Graphical User Interface (GUI) for the user to interact with in order to book dental appointments. Web Application communicates with other components in order to achieve the following goals:
 
-- [Database Model Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-database-model-handler) to get information needed to display pins of clinics saved in database on the map of Gothenburg along with their names and opening hours,
+- [Database Model Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-database-model-handler) to get the information saved in the database, which is needed to display pins of clinics on the map of Gothenburg along with their names and opening hours,
 - [Schedule Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-schedule-handler) to display dental appointment slots according to the user's date choice and update schedule dynamically, and
-- [Booking Validator](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-booking-validator) to proceed with the user's booking request, and display notification to the user depending on the booking outcome (success, warning, failure or service unavailable) according to the message received from Booking Validator.
+- [Booking Validator](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-booking-validator) to proceed with the user's booking request, and display notification to the user depending on the booking outcome (success, warning, failure or service unavailable) according to the message received from the Booking Validator.
 
 ### Subcomponents
 
-This component consists of two subcomponent, each with its own README.
+This component consists of two subcomponents, each with its own README.
 
 - [Frontend](./frontend/README.md)
 - [Backend](./backend/README.md)

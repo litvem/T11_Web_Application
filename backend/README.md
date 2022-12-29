@@ -36,23 +36,11 @@ Used to patch the date interval used to filter booking slots.
 
 ## Getting started with Backend
 
-### After cloning the repo and open the terminal in your local machine:
+### After cloning the repo, open the terminal in your local machine and do the following:
 
-- cd to the **backend** folder
-- install dependencies with:
-
-```
-npm install
-```
-
-- add a **.env** file  containing the following key:
-
-```dotenv
-SESSION_SECRET="<insert your key>"
-```
-
-- run the application:
-
-```
-npm run dev
-```
+| Description                                                                                                                                       | Command                                  |
+|---------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------|
+| Change directory to the **backend** folder                                                                                                        | `cd backend`                             |
+| Install dependencies                                                                                                                              | `npm install`                            |
+| Add `SESSION_SECRET` env to a .env file<br/>Angled brackets ("<" and ">"), pipes ("&#124;"), and carets ("^") must be escaped with a caret ("^"). | `echo SESSION_SECRET=(insert key)> .env` |
+| Run the **backend**                                                                                                                               | `npm run start`                          |

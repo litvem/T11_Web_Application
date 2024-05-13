@@ -2,13 +2,13 @@
 
 ## Description
 
-**Web Application** is one of the components of the Dentistimo system. Dentistimo allows users to view and book dentist appointments in the city of Gothenburg. More information can be found [here](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-project).
+**Web Application** is one of the components of the Dentistimo system. Dentistimo allows users to view and book dentist appointments in the city of Gothenburg. More information can be found [here](https://github.com/litvem/T11_Project_Documentation).
 
 Web Application represents Graphical User Interface (GUI) for the user to interact with in order to book dental appointments. Web Application communicates with other components in order to achieve the following goals:
 
-- [Database Model Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-database-model-handler) to get the information saved in the database, which is needed to display pins of clinics on the map of Gothenburg along with their names and opening hours,
-- [Schedule Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-schedule-handler) to display dental appointment slots according to the user's date choice and update schedule dynamically, and
-- [Booking Validator](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-booking-validator) to proceed with the user's booking request, and display notification to the user depending on the booking outcome (success, warning, failure or service unavailable) according to the message received from the Booking Validator.
+- [Database Model Handler](https://github.com/litvem/T11_Database_Model_Handler) to get the information saved in the database, which is needed to display pins of clinics on the map of Gothenburg along with their names and opening hours,
+- [Schedule Handler](https://github.com/litvem/T11_Schedule_Handler) to display dental appointment slots according to the user's date choice and update schedule dynamically, and
+- [Booking Validator](https://github.com/litvem/T11_Booking_Validator) to proceed with the user's booking request, and display notification to the user depending on the booking outcome (success, warning, failure or service unavailable) according to the message received from the Booking Validator.
 
 ### Subcomponents
 
@@ -21,7 +21,7 @@ This component consists of two subcomponents, each with its own README.
 
 ### **<ins>Input Data</ins>**
 
-The **input data** of this component is the dental clinics data received from [Database Model Handler](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-database-model-handler) and booking response data received from [Booking Validator](https://git.chalmers.se/courses/dit355/dit356-2022/t-11/t11-booking-validator).
+The **input data** of this component is the dental clinics data received from [Database Model Handler](https://github.com/litvem/T11_Database_Model_Handler) and booking response data received from [Booking Validator](https://github.com/litvem/T11_Booking_Validator).
 
 >Example of Dental clinics data
 
